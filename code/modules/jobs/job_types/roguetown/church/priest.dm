@@ -2,6 +2,7 @@ GLOBAL_LIST_EMPTY(apostasy_players)
 GLOBAL_LIST_EMPTY(cursed_players)
 GLOBAL_LIST_EMPTY(excommunicated_players)
 GLOBAL_LIST_EMPTY(heretical_players)
+GLOBAL_LIST_EMPTY(priest_swap_timers)
 #define PRIEST_ANNOUNCEMENT_COOLDOWN (2 MINUTES)
 #define PRIEST_SERMON_COOLDOWN (30 MINUTES)
 #define PRIEST_APOSTASY_COOLDOWN (10 MINUTES)
@@ -122,8 +123,6 @@ GLOBAL_LIST_EMPTY(heretical_players)
 	)
 	if(H.age == AGE_OLD)
 		H.adjust_skillrank_up_to(/datum/skill/magic/holy, 6, TRUE)
-	var/datum/devotion/C = new /datum/devotion(H, H.patron) // This creates the cleric holder used for devotion spells
-	C.grant_miracles(H, cleric_tier = CLERIC_T4, passive_gain = CLERIC_REGEN_MAJOR, start_maxed = TRUE)	//Starts off maxed out.
 
 	H.verbs |= /mob/living/carbon/human/proc/coronate_lord
 	H.verbs |= /mob/living/carbon/human/proc/churchannouncement
@@ -198,19 +197,25 @@ GLOBAL_LIST_EMPTY(heretical_players)
 	ADD_TRAIT(H, TRAIT_CLERGYRADICAL, "job")
 	H.church_favor += 3000
 	H.verbs |= /mob/living/carbon/human/proc/change_patron
-	if(!H.devotion)
-		var/datum/devotion/C = new /datum/devotion(H, H.patron)
-		C.grant_miracles(H, cleric_tier = CLERIC_T4, passive_gain = CLERIC_REGEN_MAJOR, start_maxed = TRUE)
 	var/miracle_menu_path = text2path("/obj/effect/proc_holder/spell/self/learnmiracle")
-	if(miracle_menu_path)
-		if(!H.mind.has_spell(miracle_menu_path))
-			var/obj/effect/proc_holder/spell/S = new miracle_menu_path
-			if(S)
-				H.mind.AddSpell(S, H)
+	if(miracle_menu_path && !H.mind.has_spell(miracle_menu_path))
+		var/obj/effect/proc_holder/spell/S = new miracle_menu_path
+		if(S)
+			H.mind.AddSpell(S, H)
 	if(!H.mind.has_spell(/obj/effect/proc_holder/spell/invoked/convert_heretic_priest))
 		H.mind.AddSpell(new /obj/effect/proc_holder/spell/invoked/convert_heretic_priest, H)
+	if(!H.mind.has_spell(/obj/effect/proc_holder/spell/invoked/cure_rot))
+		H.mind.AddSpell(new /obj/effect/proc_holder/spell/invoked/cure_rot, H)
+	if(!H.mind.has_spell(/obj/effect/proc_holder/spell/self/convertrole/templar))
+		H.mind.AddSpell(new /obj/effect/proc_holder/spell/self/convertrole/templar, H)
+	if(!H.mind.has_spell(/obj/effect/proc_holder/spell/self/convertrole/monk))
+		H.mind.AddSpell(new /obj/effect/proc_holder/spell/self/convertrole/monk, H)
 	if(!H.mind.has_spell(/obj/effect/proc_holder/spell/invoked/projectile/divineblast))
 		H.mind.AddSpell(new /obj/effect/proc_holder/spell/invoked/projectile/divineblast, H)
+	if(!H.mind.has_spell(/obj/effect/proc_holder/spell/invoked/wound_heal))
+		H.mind.AddSpell(new /obj/effect/proc_holder/spell/invoked/wound_heal, H)
+	if(!H.mind.has_spell(/obj/effect/proc_holder/spell/invoked/takeapprentice))
+		H.mind.AddSpell(new /obj/effect/proc_holder/spell/invoked/takeapprentice, H)
 
 	to_chat(H, span_notice("I embrace the radical path."))
 
@@ -604,7 +609,8 @@ code\modules\admin\verbs\divinewrath.dm has a variant with all the gods so keep 
 		to_chat(src, span_warning("Only a radical bishop may abandon the old doctrine."))
 		return
 
-	var/next_swap = 20 MINUTES
+	var/key = REF(src)
+	var/next_swap = GLOB.priest_swap_timers[key]
 	if(!isnum(next_swap))
 		next_swap = 0
 
@@ -626,25 +632,20 @@ code\modules\admin\verbs\divinewrath.dm has a variant with all the gods so keep 
 	var/string_choice = show_radial_menu(src, src, god_choice, require_near = FALSE)
 	if(!string_choice)
 		return
-
 	var/new_patron_type = god_type[string_choice]
 	if(!new_patron_type)
 		return
-
 	if(patron && istype(patron, new_patron_type))
 		to_chat(src, span_info("You already follow [string_choice]."))
 		return
-
 	patron = new new_patron_type()
-
 	if(devotion && ("patron" in devotion.vars))
 		devotion.patron = patron
-
+	GLOB.priest_swap_timers[key] = world.time + PRIEST_SWAP_COOLDOWN
 	if(string_choice == "Astrata")
 		to_chat(src, "<font color='yellow'>HEAVEN SHALL THEE RECOMPENSE. THOU BEAREST MY POWER ONCE MORE.</font>")
 	else
 		to_chat(src, "<font color='yellow'>Thou now professes faith in [string_choice].</font>")
-
 	to_chat(src, "<font color='yellow'>Your miracles remain unchanged.</font>")
 
 /obj/effect/proc_holder/spell/invoked/convert_heretic_priest

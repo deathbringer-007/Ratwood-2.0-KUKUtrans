@@ -629,14 +629,19 @@ var/global/list/NOC_SECRET_MIRACLES = list(
 
 	_ensure_relations(H)
 	build_divine_patrons_index()
+	build_inhumen_patrons_index()
 
 	var/list/buckets = _build_learn_buckets(H)
+	var/my_patron = _get_human_patron_name(H)
+	var/show_shunned_tabs = (_shunned_relations_unlocked(H) || _is_inhumen_patron_name(my_patron))
 
 	var/list/nav = list()
+	var/list/nav_shunned = list()
+
 	if(src.current_learn_tab == "none")
 		nav += "<b>None</b>"
 	else
-		nav += "<a href='?src=[REF(src)];learntab=none'>None</a>"
+		nav += "<a href=\"?src=[REF(src)];learntab=none\">None</a>"
 
 	var/list/names_div = list()
 	for(var/pn1 in divine_patrons_index)
@@ -648,24 +653,52 @@ var/global/list/NOC_SECRET_MIRACLES = list(
 		if(H.patron_relations && (n in H.patron_relations))
 			relv = H.patron_relations[n]
 
+		var/tab_id = url_encode("[n]")
+
 		if(relv > 0)
 			if(src.current_learn_tab == "[n]")
-				nav += "<b>[n]</b>"
+				nav += "<b>[_cr_html_attr(n)]</b>"
 			else
-				nav += "<a href='?src=[REF(src)];learntab=[n]'>[n]</a>"
+				nav += "<a href=\"?src=[REF(src)];learntab=[tab_id]\">[_cr_html_attr(n)]</a>"
 		else
-			nav += "<span style='color:#7f8c8d'>[n]</span>"
+			nav += "<span style='color:#7f8c8d'>[_cr_html_attr(n)]</span>"
+
+	if(show_shunned_tabs)
+		var/list/names_inh = list()
+		for(var/pn2 in inhumen_patrons_index)
+			names_inh += "[pn2]"
+		names_inh = sortList(names_inh)
+
+		for(var/n2 in names_inh)
+			var/relv2 = 0
+			if(H.patron_relations && (n2 in H.patron_relations))
+				relv2 = H.patron_relations[n2]
+
+			var/tab_id2 = url_encode("[n2]")
+
+			if(relv2 > 0 || n2 == my_patron)
+				if(src.current_learn_tab == "[n2]")
+					nav_shunned += "<b>[_cr_html_attr(n2)]</b>"
+				else
+					nav_shunned += "<a href=\"?src=[REF(src)];learntab=[tab_id2]\">[_cr_html_attr(n2)]</a>"
+			else
+				nav_shunned += "<span style='color:#7f8c8d'>[_cr_html_attr(n2)]</span>"
 
 	if(src.current_learn_tab == "noc_secrets")
 		nav += "<b>Secrets of Noc</b>"
 	else if(H.unlocked_research_noc_secrets)
-		nav += "<a href='?src=[REF(src)];learntab=noc_secrets'>Secrets of Noc</a>"
+		nav += "<a href=\"?src=[REF(src)];learntab=noc_secrets\">Secrets of Noc</a>"
 	else
 		nav += "<span style='color:#7f8c8d'>Secrets of Noc</span>"
 
 	var/html = "<center><h3>Learn Miracles</h3></center><hr>"
 	html += "Favor: <b>[H.church_favor]</b> | MP: <b>[H.miracle_points]</b><hr>"
 	html += jointext(nav, " | ")
+
+	if(nav_shunned.len)
+		html += "<br><span style='color:#9b59b6'><b>Shunned:</b></span> "
+		html += jointext(nav_shunned, " | ")
+
 	html += "<br><br>"
 
 	if(src.current_learn_tab == "none")
@@ -709,7 +742,7 @@ var/global/list/NOC_SECRET_MIRACLES = list(
 			else if(req2 && !has_requirement)
 				html += "<span style='color:#7f8c8d'>Requirement missing</span>"
 			else if(H.miracle_points >= cost2)
-				html += "<a href='?src=[REF(src)];buynoc=[id2]'>Buy</a>"
+				html += "<a href=\"?src=[REF(src)];buynoc=[id2]\">Buy</a>"
 			else
 				html += "<span style='color:#7f8c8d'>Not enough MP</span>"
 
@@ -744,7 +777,7 @@ var/global/list/NOC_SECRET_MIRACLES = list(
 				if(is_learned2)
 					html += "<span style='color:#2ecc71'>Learned</span>"
 				else if(H.miracle_points >= cost3)
-					html += "<a href='?src=[REF(src)];learnspell=[typepath_txt]'>Learn</a>"
+					html += "<a href=\"?src=[REF(src)];learnspell=[typepath_txt]\">Learn</a>"
 				else
 					html += "<span style='color:#7f8c8d'>Not enough MP</span>"
 
@@ -1136,12 +1169,24 @@ var/global/list/NOC_SECRET_MIRACLES = list(
 				src.current_learn_tab = "noc_secrets"
 		else
 			build_divine_patrons_index()
+			build_inhumen_patrons_index()
+
+			var/allowed_tab = FALSE
+			var/my_patron2 = _get_human_patron_name(H)
+
 			if(tb2 in divine_patrons_index)
+				allowed_tab = TRUE
+			else if(tb2 in inhumen_patrons_index)
+				if(_shunned_relations_unlocked(H) || tb2 == my_patron2)
+					allowed_tab = TRUE
+
+			if(allowed_tab)
 				var/relv = 0
 				if(H.patron_relations && (tb2 in H.patron_relations))
 					relv = H.patron_relations[tb2]
-				if(relv > 0)
+				if(relv > 0 || tb2 == my_patron2)
 					src.current_learn_tab = "[tb2]"
+
 		open_learn_ui(H)
 		return
 
