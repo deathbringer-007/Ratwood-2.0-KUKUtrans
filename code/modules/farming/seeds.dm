@@ -312,3 +312,88 @@
 	new /obj/structure/tree_sapling/sakura(T)
 	to_chat(user, span_notice("I carefully plant the sakura sapling and pat the soil down."))
 	qdel(src)
+
+// -- Bush seeds (Dendor druid content) ------------------------------------
+// Grows into a staged bush sapling that eventually becomes a harvestable bush,
+// then a tall hedge if left unpruned. Requires journeyman farming to plant.
+
+/obj/item/seeds/bush
+	name = "bush seed"
+	desc = "A hard, thorny seed. Plant in prepared soil and keep it watered to grow a wild bush."
+	icon_state = "seed"
+	seed_identity = "bush seeds"
+
+/obj/item/seeds/bush/attack_turf(turf/T, mob/living/user)
+	if(user.get_skill_level(/datum/skill/labor/farming) < SKILL_LEVEL_JOURNEYMAN)
+		to_chat(user, span_warning("I don't have the farming knowledge to tend a bush sapling."))
+		return
+	if(locate(/obj/structure/bush_sapling) in T)
+		to_chat(user, span_warning("There's already a bush sapling growing here."))
+		return
+	if(!locate(/obj/structure/soil) in T && !istype(T, /turf/open/floor/rogue/dirt) && !istype(T, /turf/open/floor/rogue/grass))
+		to_chat(user, span_warning("I need to plant this in soil, on dirt, or on grass."))
+		return
+	to_chat(user, span_notice("I begin mounding up earth for the bush seed..."))
+	if(!do_after(user, get_farming_do_time(user, 10 SECONDS), target = src))
+		return
+	apply_farming_fatigue(user, 25)
+	// Re-check after delay
+	if(locate(/obj/structure/bush_sapling) in T)
+		return
+	if(!locate(/obj/structure/soil) in T)
+		if(!istype(T, /turf/open/floor/rogue/dirt) && !istype(T, /turf/open/floor/rogue/grass))
+			return
+		new /obj/structure/soil(T)
+	new /obj/structure/bush_sapling(T)
+	to_chat(user, span_notice("I plant the bush seed and pat down the earth."))
+	qdel(src)
+
+// -- Flower seeds (Dendor druid content) ----------------------------------
+// Select a flower type in-hand, then plant in dirt/grass/soil.
+// Waters once → blooms into the chosen decorative flower bush after 5 minutes.
+// No skill gate — purely decorative.
+
+/obj/item/seeds/flower
+	name = "flower seeds"
+	desc = "A small packet of mixed flower seeds. Click in-hand to choose which flower to grow, then plant them in the earth and water."
+	icon_state = "seed"
+	seed_identity = "flower seeds"
+	var/flower_sprout_type = null
+	var/flower_name = null
+
+/obj/item/seeds/flower/attack_self(mob/living/user)
+	var/list/options = list(
+		"Yellow flowers"        = /obj/structure/flower_sprout/yellow,
+		"Blue & red flowers"    = /obj/structure/flower_sprout/brflower,
+		"Purple & pink flowers" = /obj/structure/flower_sprout/ppflower,
+		"Lavender"              = /obj/structure/flower_sprout/lavender
+	)
+	var/choice = input(user, "Which flower would you like to cultivate from these seeds?", "Choose Flower") as null|anything in options
+	if(isnull(choice))
+		return
+	flower_sprout_type = options[choice]
+	flower_name = choice
+	name = "[lowertext(choice)] seeds"
+	to_chat(user, span_notice("I sort the seeds to cultivate [flower_name]."))
+
+/obj/item/seeds/flower/attack_turf(turf/T, mob/living/user)
+	if(!flower_sprout_type)
+		to_chat(user, span_warning("I haven't chosen what to grow yet. Click in hand to choose first."))
+		return
+	if(locate(/obj/structure/flower_sprout) in T)
+		to_chat(user, span_warning("There's already a flower sprout growing here."))
+		return
+	if(!isopenturf(T))
+		to_chat(user, span_warning("The ground here is not suitable for planting."))
+		return
+	if(!istype(T, /turf/open/floor/rogue/dirt) && !istype(T, /turf/open/floor/rogue/grass) && !locate(/obj/structure/soil) in T)
+		to_chat(user, span_warning("I should plant these in dirt or grass."))
+		return
+	to_chat(user, span_notice("I scatter the seeds into the ground..."))
+	if(!do_after(user, 5 SECONDS, target = src))
+		return
+	if(locate(/obj/structure/flower_sprout) in T)
+		return
+	new flower_sprout_type(T)
+	to_chat(user, span_notice("I plant the flower seeds."))
+	qdel(src)
