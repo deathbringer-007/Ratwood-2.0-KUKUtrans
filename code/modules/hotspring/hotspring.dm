@@ -249,6 +249,7 @@
 	obj_flags = CAN_BE_HIT | IGNORE_SINK
 	layer = ABOVE_ALL_MOB_LAYER
 	plane = GAME_PLANE_UPPER
+	pixel_x = -32
 
 	bound_height = 128
 	bound_width = 128
@@ -256,7 +257,7 @@
 	blade_dulling = DULLING_CUT
 	attacked_sound = 'sound/misc/woodhit.ogg'
 	destroy_sound = 'sound/misc/woodhit.ogg'
-	static_debris = list(/obj/item/grown/log/tree/small = 2)
+	static_debris = list(/obj/item/grown/log/tree = 1)
 	var/obj/effect/abstract/particle_holder/cached/petal_effect
 
 /obj/structure/flora/sakura/Initialize(mapload)

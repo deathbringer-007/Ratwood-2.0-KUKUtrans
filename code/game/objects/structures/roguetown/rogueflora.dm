@@ -205,6 +205,7 @@
 		if(!throwtarget)
 			continue
 		L.safe_throw_at(throwtarget, 4, 1, force = MOVE_FORCE_STRONG)
+		L.Knockdown(2 SECONDS)
 
 /obj/structure/flora/roguetree/wise/obj_destruction(damage_flag)
 	fling_nearby_mobs()

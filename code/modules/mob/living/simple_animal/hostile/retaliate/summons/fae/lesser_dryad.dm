@@ -19,6 +19,8 @@
 	var/conjurer_ckey = null
 	/// Back-reference to the spell instance that summoned this dryad.
 	var/obj/effect/proc_holder/spell/targeted/summon_lesser_dryad/summoner_spell
+	/// Mob to follow when ordered to follow (old-style AI).
+	var/mob/living/follow_target = null
 
 /mob/living/simple_animal/hostile/retaliate/rogue/fae/dryad/lesser/Initialize(mapload, mob/living/carbon/human/owner)
 	. = ..()
@@ -32,6 +34,14 @@
 /// Override vine() to do nothing — lesser dryad does not spread vines passively.
 /mob/living/simple_animal/hostile/retaliate/rogue/fae/dryad/lesser/vine()
 	return
+
+/// When following an owner (old-style AI), step toward them when not in combat.
+/mob/living/simple_animal/hostile/retaliate/rogue/fae/dryad/lesser/handle_automated_movement()
+	if(!QDELETED(follow_target) && !enemies.len)
+		if(get_dist(src, follow_target) > 2)
+			step_towards(src, follow_target)
+		return
+	return ..()
 
 /// Special attack: kneestingers on all 4 cardinal tiles + 5×5 solid vine area.
 /// Called by /obj/effect/proc_holder/spell/targeted/lesser_dryad_special when the

@@ -89,8 +89,8 @@
 	var/slow_aura_elapsed = 0
 	/// dt accumulator for heal-aura 60-second ticks.
 	var/heal_aura_elapsed = 0
-	/// Cooldown flag for the middle-click manual heal from cat5.
-	var/manual_heal_cooldown = FALSE
+	/// Per-player middle-click heal cooldown: ckey -> world.time threshold (5 seconds after heal wears off).
+	var/list/heal_player_cooldowns = list()
 
 	// ---- Wedding ceremony state ------------------------------------------
 	/// TRUE while an eoran bud has been offered and the tree awaits a bitten apple.
@@ -282,7 +282,7 @@
 	switch(category)
 		if("cat1") return "Dendor's Harvest"
 		if("cat2") return "Fungal Vigil"
-		if("cat3") return "Fae Weaving"
+		if("cat3") return "Fey Weaving"
 		if("cat4") return "Treefather's Bulwark"
 		if("cat5") return "Living Light"
 		if("cat6") return "Nature's Temper"
@@ -590,11 +590,11 @@
 		var/turf/adj = get_step(T, D)
 		if(adj && !isclosedturf(adj) && !locate(/obj/structure/glowshroom) in adj)
 			new /obj/structure/glowshroom(adj)
-	// Buff nearby conscious pantheon followers except excluded patrons.
+	// Buff nearby non-dead pantheon followers except excluded patrons.
 	for(var/mob/living/carbon/human/H in range(6, src))
 		if(!is_valid_vigil_follower(H))
 			continue
-		if(H.stat != CONSCIOUS || H.incapacitated())
+		if(H.stat == DEAD)
 			continue
 		if(H.patron?.type == /datum/patron/divine/dendor)
 			H.apply_status_effect(/datum/status_effect/buff/dendor_vigil/dendorite)
@@ -602,7 +602,7 @@
 			H.apply_status_effect(/datum/status_effect/buff/dendor_vigil)
 	to_chat(user, span_green("Kneestingers erupt in a ring — the Treefather's vigil strengthens his faithful."))
 
-/// Cat 3 — Fae Weaving: mushroom fae circle seed (repeatable).
+/// Cat 3 — Fey Weaving: mushroom fae circle seed (repeatable).
 /// Offerings: 5 runed artifacts OR leyline shards. Reward: 1 mushroom_fae seed.
 /obj/structure/flora/roguetree/wise/sanctified/proc/reward_cat3(mob/living/user)
 	var/turf/T = get_turf(user)
@@ -696,20 +696,18 @@
 			H.apply_status_effect(/datum/status_effect/debuff/sanctified_tree_slow)
 			tree_data.slowed_mobs |= H
 
-/// Heals Dendor followers within 5 tiles periodically.
+/// Heals Dendor followers within 5 tiles periodically like a healing miracle.
 /// Called every 60 seconds when has_heal_aura is TRUE.
-/// Uses green visual effect matching the wider wise-tree glow aesthetic.
 /obj/structure/flora/roguetree/wise/sanctified/proc/pulse_heal_aura()
 	var/healed_any = FALSE
-	for(var/mob/living/carbon/human/H in range(7, src))
+	for(var/mob/living/carbon/human/H in range(5, src))
 		if(H.patron?.type != /datum/patron/divine/dendor)
 			continue
-		if(H.stat != CONSCIOUS || H.incapacitated())
+		if(H.stat == DEAD)
 			continue
-		if(H.getBruteLoss() <= 0 && H.getFireLoss() <= 0)
+		if(H.has_status_effect(/datum/status_effect/buff/healing))
 			continue
-		H.adjustBruteLoss(-8, 0)
-		H.adjustFireLoss(-5, 0)
+		H.apply_status_effect(/datum/status_effect/buff/healing, 2.5)
 		new /obj/effect/temp_visual/heal_rogue(get_turf(H))
 		healed_any = TRUE
 	if(healed_any)
@@ -720,8 +718,7 @@
 //==============================================================================
 
 /// Middle-click handler for cat5 healing aura.
-/// Dendor followers middle-click the tree to receive campfire-style healing
-/// (2x faster than campfire) with a progress bar. Cooldown: 2 minutes.
+/// Applies a healing miracle to the Dendor follower. Per-player cooldown: 5 seconds after effect ends.
 /obj/structure/flora/roguetree/wise/sanctified/MiddleClick(mob/user, params)
 	if(!tree_data?.has_heal_aura)
 		return
@@ -732,8 +729,12 @@
 		return
 	if(H.stat != CONSCIOUS || H.incapacitated())
 		return
-	if(tree_data.manual_heal_cooldown)
-		to_chat(H, span_warning("The tree's healing has not yet recovered — wait a moment."))
+	if(H.has_status_effect(/datum/status_effect/buff/healing))
+		to_chat(H, span_warning("The Treefather's warmth already flows through me."))
+		return
+	var/cooldown_until = tree_data.heal_player_cooldowns[H.ckey]
+	if(cooldown_until && world.time < cooldown_until)
+		to_chat(H, span_warning("The tree's healing has not yet recovered for me — wait a moment."))
 		return
 	if(get_dist(H, src) > 1)
 		to_chat(H, span_warning("I must be adjacent to the tree to draw from its power."))
@@ -741,15 +742,17 @@
 	to_chat(H, span_notice("I press my palms to the sacred bark and channel the Treefather's warmth."))
 	if(!do_after(H, 3 SECONDS, target = src))
 		return
-	if(tree_data.manual_heal_cooldown || QDELETED(src))
+	if(QDELETED(src))
 		return
-	H.adjustBruteLoss(-30, 0)
-	H.adjustFireLoss(-15, 0)
+	if(H.has_status_effect(/datum/status_effect/buff/healing))
+		to_chat(H, span_warning("The Treefather's warmth already flows through me."))
+		return
+	H.apply_status_effect(/datum/status_effect/buff/healing, 2.5)
 	new /obj/effect/temp_visual/heal_rogue(get_turf(H))
 	playsound(get_turf(src), 'sound/magic/churn.ogg', 50, FALSE)
 	to_chat(H, span_green("The Treefather's warmth flows into my wounds."))
-	tree_data.manual_heal_cooldown = TRUE
-	addtimer(VARSET_CALLBACK(tree_data, manual_heal_cooldown, FALSE), 2 MINUTES)
+	// Per-player cooldown: 5 seconds after the 10-second effect expires
+	tree_data.heal_player_cooldowns[H.ckey] = world.time + 15 SECONDS
 
 /// Temporary -4 speed debuff applied by the Treefather's Bulwark aura.
 /// Duration is 8 seconds — slightly longer than the 5-second aura tick —

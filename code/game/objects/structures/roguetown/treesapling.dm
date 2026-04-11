@@ -114,6 +114,7 @@
 			max_integrity = 150
 			obj_integrity = 150
 			blade_dulling = DULLING_CUT
+			attacked_sound = 'sound/misc/woodhit.ogg'
 		if(4)
 			spawn_final_tree()
 
@@ -133,7 +134,7 @@
 
 /obj/structure/tree_sapling/obj_destruction(damage_flag)
 	if(stage == TREESAP_STAGE_YOUNG)
-		new /obj/item/grown/log/tree/small(get_turf(src))
+		new /obj/item/grown/log/tree(get_turf(src))
 		if(prob(50))
 			new /obj/item/grown/log/tree/stick(get_turf(src))
 	return ..()
@@ -175,6 +176,7 @@
 	// Shovelling out
 	if(istype(I, /obj/item/rogueweapon/shovel))
 		to_chat(user, span_notice("I begin uprooting [src]..."))
+		playsound(src, 'sound/items/dig_shovel.ogg', 80, TRUE)
 		if(do_after(user, 3 SECONDS, target = src))
 			if(dead)
 				drop_withered_loot()
@@ -207,3 +209,8 @@
 	stage3_pixel_y = -4
 	dead_state = "apple3"
 	tree_final_type = /obj/structure/flora/sakura
+
+// Override: do not copy sapling pixel_x to the sakura tree — let the tree use its own defined offset.
+/obj/structure/tree_sapling/sakura/spawn_final_tree()
+	new tree_final_type(get_turf(src))
+	qdel(src)

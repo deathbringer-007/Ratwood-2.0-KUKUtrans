@@ -13,6 +13,7 @@
 
 /obj/structure/flora/roguegrass/bush/wall/tall/grown
 	density = FALSE
+	debris = list(/obj/item/natural/fibers = 1, /obj/item/natural/thorn = 1)
 
 //==============================================================================
 // Bush sapling
@@ -110,6 +111,10 @@
 			loot_replenish()
 			icon = 'icons/roguetown/misc/foliage.dmi'
 			icon_state = "bush2"
+			// Match regular wild bush integrity and add blade dulling
+			max_integrity = 35
+			obj_integrity = 35
+			blade_dulling = DULLING_CUT
 		if(4)
 			spawn_hedge()
 
@@ -124,6 +129,15 @@
 /obj/structure/bush_sapling/proc/spawn_hedge()
 	new /obj/structure/flora/roguegrass/bush/wall/tall/grown(get_turf(src))
 	qdel(src)
+
+/obj/structure/bush_sapling/obj_destruction(damage_flag)
+	if(stage == BUSHSAP_STAGE_MATURE && !dead)
+		// Drop loot like a wild bush being destroyed
+		new /obj/item/natural/fibers(get_turf(src))
+		new /obj/item/natural/thorn(get_turf(src))
+		if(looty.len)
+			new (pick(looty))(get_turf(src))
+	return ..()
 
 /obj/structure/bush_sapling/Crossed(atom/movable/AM)
 	. = ..()

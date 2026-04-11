@@ -125,6 +125,8 @@ GLOBAL_LIST_EMPTY(mushroom_circles)
 /obj/structure/mushroom_circle/fey
 	name = "fey mushroom circle"
 	desc = "A magical ring of pale and purple mushrooms that pulse with faint light. Druids of Dendor use these as waypoints to travel across long distances instantly."
+	max_integrity = 200
+	attacked_sound = 'sound/misc/woodhit.ogg'
 
 	/// Seconds since last scissors maintenance
 	var/maintenance_elapsed = 0
@@ -147,6 +149,11 @@ GLOBAL_LIST_EMPTY(mushroom_circles)
 	if(decay_timerid)
 		deltimer(decay_timerid)
 		decay_timerid = null
+	return ..()
+
+/obj/structure/mushroom_circle/fey/obj_destruction(damage_flag)
+	for(var/i in 1 to rand(1, 2))
+		new /obj/item/natural/fibers(get_turf(src))
 	return ..()
 
 /obj/structure/mushroom_circle/fey/process(dt)
@@ -187,9 +194,19 @@ GLOBAL_LIST_EMPTY(mushroom_circles)
 	if(ishuman(user))
 		var/mob/living/carbon/human/H = user
 		if(H.patron && H.patron.type == /datum/patron/divine/dendor)
-			. += span_notice("Hold my amulet of Dendor and press it on this circle to travel to another fey circle.")
+			if(H.get_skill_level(/datum/skill/magic/druidic) >= SKILL_LEVEL_APPRENTICE)
+				. += span_notice("Hold my amulet of Dendor and press it on this circle to travel to another fey circle.")
+			else
+				. += span_warning("The fey's mysteries are beyond my current understanding — I need greater druidic training to commune with this circle.")
 
 /obj/structure/mushroom_circle/fey/attackby(obj/item/I, mob/living/user, params)
+	// Require at least apprentice Druidic Trickery to interact with fey circle mechanics.
+	if(ishuman(user))
+		var/mob/living/carbon/human/H = user
+		if(H.get_skill_level(/datum/skill/magic/druidic) < SKILL_LEVEL_APPRENTICE)
+			to_chat(user, span_warning("The fey magic in this circle is beyond my understanding — I need greater druidic training to commune with it."))
+			return
+
 	// Feather rename support — name only, no description editing.
 	if(istype(I, /obj/item/natural/feather))
 		var/new_name = stripped_input(user, "What do you want to name this fey circle?", "Rename Fey Circle", "", MAX_NAME_LEN)

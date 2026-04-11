@@ -77,11 +77,14 @@
 		if(!to_grind)
 			to_chat(user, "<span class='warning'>There's nothing to grind.</span>")
 			return
-		if(istype(to_grind, /obj/item/seeds) && reagents.get_reagent_amount(/datum/reagent/water/holywater) >= 2)
-			user.visible_message(span_info("[user] grinds [to_grind] into the holy water, drawing out Dendor's blessing."))
+		if((to_grind.type == /obj/item/seeds/treesap) && reagents.get_reagent_amount(/datum/reagent/water/blessed) >= 10)
+			if(!ishuman(user) || user.get_skill_level(/datum/skill/magic/druidic) < SKILL_LEVEL_NOVICE)
+				to_chat(user, span_warning("I lack the druidic knowledge to draw Dendor's blessing from these seeds."))
+				return
+			user.visible_message(span_info("[user] grinds [to_grind] into the blessed water, drawing out Dendor's blessing."))
 			playsound(loc, 'sound/foley/mortarpestle.ogg', 100, FALSE)
 			if(do_after(user, 10, target = src))
-				reagents.remove_reagent(/datum/reagent/water/holywater, 2)
+				reagents.remove_reagent(/datum/reagent/water/blessed, 10)
 				new /obj/item/alch/blessedseedpowder(get_turf(src))
 				QDEL_NULL(to_grind)
 				to_chat(user, span_notice("The seeds absorb Dendor's blessing, forming luminous powder."))

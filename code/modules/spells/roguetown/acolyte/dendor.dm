@@ -247,15 +247,20 @@
 		return TRUE
 
 	// Non-soil target mode: bless exactly what was targeted.
+	// Evil trees are dense+opaque, so the click may land on the turf — check both.
+	var/obj/structure/flora/roguetree/target_tree = null
 	if(istype(target_atom, /obj/structure/flora/roguetree))
-		var/obj/structure/flora/roguetree/tree = target_atom
-		if(blessed_seed_powder && tree.reinvigorate_tree(user))
+		target_tree = target_atom
+	else
+		target_tree = locate(/obj/structure/flora/roguetree) in target_turf
+	if(target_tree)
+		if(blessed_seed_powder && target_tree.reinvigorate_tree(user))
 			if(blessed_seed_powder == user.get_active_held_item() || blessed_seed_powder == user.get_inactive_held_item())
 				qdel(blessed_seed_powder)
-			visible_message(span_green("[usr] invokes Dendor's favor upon [tree]."))
+			visible_message(span_green("[usr] invokes Dendor's favor upon [target_tree]."))
 			return TRUE
-		if(tree.bless_tree(user))
-			visible_message(span_green("[usr] invokes Dendor's favor upon [tree]."))
+		if(target_tree.bless_tree(user))
+			visible_message(span_green("[usr] invokes Dendor's favor upon [target_tree]."))
 			return TRUE
 	if(istype(target_atom, /obj/structure/flora/newtree))
 		var/obj/structure/flora/newtree/tree = target_atom
@@ -587,7 +592,7 @@
 		return FALSE
 	var/mob/living/carbon/human/H = user
 	if(world.time < death_cooldown_until)
-		to_chat(H, span_warning("The bond to my sould-bound tree is unstable. I must wait [DisplayTimeText(death_cooldown_until - world.time)] before summoning another dryad."))
+		to_chat(H, span_warning("The bond to my soul-bound tree is unstable. I must wait [DisplayTimeText(death_cooldown_until - world.time)] before summoning another dryad."))
 		revert_cast()
 		return FALSE
 
@@ -680,8 +685,8 @@
 	if(!can_cast(caller) || !cast_check(FALSE, ranged_ability_user))
 		deactivate(caller)
 		return TRUE
-	if(perform(list(target), TRUE, user = ranged_ability_user))
-		deactivate(caller)
+	perform(list(target), TRUE, user = ranged_ability_user)
+	deactivate(caller)
 	return TRUE
 
 /obj/effect/proc_holder/spell/targeted/lesser_dryad_special/cast(list/targets, mob/user = usr)
@@ -708,7 +713,13 @@
 		return FALSE
 
 	if(D.ai_controller)
+		D.ai_controller.CancelActions()
 		D.ai_controller.clear_blackboard_key(BB_BASIC_MOB_CURRENT_TARGET)
+		D.ai_controller.clear_blackboard_key(BB_BASIC_MOB_RETALIATE_LIST)
+	// For old-style AI mobs, clear the enemies list and lose current target
+	// so the dryad can move to the target turf without being dragged back into combat.
+	D.enemies = list()
+	D.LoseTarget()
 	D.Goto(target_turf, D.move_to_delay, 1)
 	addtimer(CALLBACK(src, PROC_REF(try_execute_surge), D, target_turf, H, 12), 0.5 SECONDS)
 	return TRUE
@@ -770,11 +781,13 @@
 			D.ai_controller.clear_blackboard_key(BB_TRAVEL_DESTINATION)
 			D.ai_controller.clear_blackboard_key(BB_BASIC_MOB_RETALIATE_LIST)
 			D.ai_controller.set_blackboard_key(BB_FOLLOW_TARGET, src)
+		// Old-style AI: clear enemies so the dryad stops combat and begins following
+		D.enemies = list()
+		D.LoseTarget()
+		D.follow_target = src
 		D.aggressive = FALSE
 		if(!("neutral" in D.faction))
 			D.faction += "neutral"
-		D.enemies = list()
-		D.LoseTarget()
 		to_chat(src, span_notice("[D.name] will follow me."))
 		return TRUE
 
@@ -786,7 +799,11 @@
 			D.ai_controller.clear_blackboard_key(BB_TRAVEL_DESTINATION)
 			D.ai_controller.clear_blackboard_key(BB_BASIC_MOB_RETALIATE_LIST)
 			D.ai_controller.set_blackboard_key(BB_BASIC_MOB_CURRENT_TARGET, A)
+		// Old-style AI: add target to enemies list and trigger retaliate
+		D.follow_target = null
 		D.aggressive = TRUE
+		D.enemies = list(A)
+		D.Retaliate()
 		if("neutral" in D.faction)
 			D.faction -= "neutral"
 		to_chat(src, span_notice("[D.name] charges at [A.name]!"))
