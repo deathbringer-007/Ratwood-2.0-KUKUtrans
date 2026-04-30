@@ -80,6 +80,15 @@ SUBSYSTEM_DEF(soundloopers)
 		
 		var/atom/loop_parent = loop.parent?.resolve()
 		if(!loop_parent)
+			// Parent is gone — clean up the stale entry. Without this,
+			// the stored sound object's channel may be reused by another
+			// datum and volume-update packets from this client would
+			// corrupt the new owner's audio.
+			var/list/stale = played_loops[loop]
+			var/sound/stale_sound = stale?["SOUND"]
+			if(stale_sound)
+				mob.stop_sound_channel(stale_sound.channel)
+			played_loops -= loop
 			continue
 
 		if(mob && loop_parent == mob) //the sound's coming from inside the house!
