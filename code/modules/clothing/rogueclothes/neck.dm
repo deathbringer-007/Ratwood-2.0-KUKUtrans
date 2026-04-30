@@ -58,17 +58,9 @@
 	icon_state = "ccoif"
 	item_state = "ccoif"
 	color = "#ad977d"
-	flags_inv = HIDEHAIR
-	slot_flags = ITEM_SLOT_NECK|ITEM_SLOT_HEAD
-	blocksound = SOFTHIT
 	body_parts_covered = NECK|HAIR|EARS|HEAD
 	armor = ARMOR_PADDED //gambeson for head
 	prevent_crits = list(BCLASS_CUT, BCLASS_BLUNT)
-	adjustable = CAN_CADJUST
-	toggle_icon_state = TRUE
-	sewrepair = TRUE
-	cold_protection = HEAD
-	min_cold_protection_temperature = BODYTEMP_COLD_LEVEL_ONE_MAX
 
 /obj/item/clothing/neck/roguetown/coif/heavypadding
 	name = "heavy padded coif"
@@ -78,15 +70,8 @@
 	color = "#976E6B"
 	flags_inv = HIDEEARS|HIDEFACE|HIDEHAIR|HIDEFACIALHAIR|HIDESNOUT
 	slot_flags = ITEM_SLOT_NECK|ITEM_SLOT_HEAD
-	blocksound = SOFTHIT
 	body_parts_covered = NECK|HAIR|EARS|HEAD|MOUTH
 	armor = ARMOR_PADDED_GOOD //full padded gambeson basically
-	prevent_crits = list(BCLASS_CUT, BCLASS_BLUNT)
-	adjustable = CAN_CADJUST
-	toggle_icon_state = TRUE
-	sewrepair = TRUE
-	cold_protection = HEAD
-	min_cold_protection_temperature = BODYTEMP_COLD_LEVEL_ONE_MAX
 
 /obj/item/clothing/neck/roguetown/coif/heavypadding/ComponentInitialize()
 	return
@@ -195,7 +180,6 @@
 	name = "iron chain coif"
 	desc = "A coif of meticulously crafted iron rings. It isn't steel, but metal is metal, and it might just save your life."
 	icon_state = "ichaincoif"
-	anvilrepair = /datum/skill/craft/armorsmithing
 	smeltresult = /obj/item/ingot/iron
 	max_integrity = ARMOR_INT_SIDE_IRON
 
@@ -271,7 +255,6 @@
 	icon_state = "ibevor"
 	smeltresult = /obj/item/ingot/iron
 	max_integrity = ARMOR_INT_SIDE_IRON
-	anvilrepair = /datum/skill/craft/armorsmithing
 
 /obj/item/clothing/neck/roguetown/gorget
 	name = "gorget"
@@ -803,7 +786,6 @@
 	resistance_flags = FIRE_PROOF
 	sellprice = 222
 	smeltresult = /obj/item/roguegem/green
-	anvilrepair = /datum/skill/craft/armorsmithing
 
 //
 
