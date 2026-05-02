@@ -8,6 +8,47 @@
 	alternate_worn_layer = NECK_LAYER
 	var/overarmor
 
+/obj/item/clothing/neck/roguetown/examine()
+	. = ..()
+	if(bell)
+		. += span_info("It has a <a href='?src=[REF(src)];removebell=1'>bell</a> attached.")
+
+/obj/item/clothing/neck/roguetown/Topic(href, href_list)
+	..()
+
+	if(!usr)
+		return
+
+	if(href_list["removebell"])
+		remove_bell(usr)
+
+/obj/item/clothing/neck/roguetown/proc/remove_bell(mob/user)
+	if(!bell)
+		return
+	if(!Adjacent(user))
+		to_chat(user, span_warning("As much as I'd love to snatch that bell, I'm not close enough."))
+		return
+	for(var/obj/item/catbell/bell in src)
+		user.put_in_hands(bell)
+		break
+	bell = FALSE
+	bellsound = FALSE
+	qdel(src.GetComponent(/datum/component/squeak))
+	to_chat(user, span_info("I remove the bell from [src]."))
+
+/obj/item/clothing/neck/roguetown/attackby(obj/item/I, mob/user)
+	if(istype(I, /obj/item/catbell))
+		var/obj/item/catbell/bell = I
+		if(src.bellsound || src.bell) //Already has a bell, can't attach another one.
+			to_chat(user, span_info("[src] already has a bell attached!"))
+			return
+		to_chat(user, span_info("I attach \the [bell] to [src]."))
+		src.bell = TRUE
+		src.bellsound = TRUE
+		src.AddComponent(/datum/component/squeak, bell.jingle_sounds, 50, 100, 1)
+		I.forceMove(src)
+	..()
+
 /obj/item/clothing/neck/roguetown/MiddleClick(mob/user, params)
 	. = ..()
 	if((user.zone_selected == BODY_ZONE_PRECISE_NOSE) && (cansnout == TRUE))
