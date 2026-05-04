@@ -202,8 +202,10 @@ GLOBAL_VAR_INIT(hostile_ai_canattack_newplayer_rejects, 0)
 		. = hearers(vision_range, targets_from) - src //Remove self, so we don't suicide
 		GLOB.hostile_ai_candidates_scanned += length(.)
 		for(var/mob/dead/observer/O in .)
+			. -= O
 			GLOB.hostile_ai_observer_candidates_filtered++
 		for(var/mob/dead/new_player/N in .)
+			. -= N
 			GLOB.hostile_ai_newplayer_candidates_filtered++
 
 		var/static/hostile_machines = typecacheof(list())
@@ -274,8 +276,10 @@ GLOBAL_VAR_INIT(hostile_ai_canattack_newplayer_rejects, 0)
 		return FALSE
 	if(isobserver(the_target))
 		GLOB.hostile_ai_canattack_observer_rejects++
+		return FALSE
 	if(isnewplayer(the_target))
 		GLOB.hostile_ai_canattack_newplayer_rejects++
+		return FALSE
 
 	if(binded)
 		return FALSE
