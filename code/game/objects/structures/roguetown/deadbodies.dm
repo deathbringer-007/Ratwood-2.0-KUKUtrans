@@ -433,7 +433,7 @@
 	name = "random dead body (dummy)"
 	desc = "This dummy object doesn't do anything"
 	icon = 'icons/roguetown/rw_deadbodies.dmi'
-	icon_state = 'base'
+	icon_state = "base"
 
 //A random-body spawner that picks a random body
 /obj/structure/deadbodyrandom/all
