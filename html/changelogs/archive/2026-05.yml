@@ -73,3 +73,6 @@
       adventurer subclass. Grants T2 miracles and Dodge Expert, as well as an additional
       hatchet. Does NOT get Maille Training, gets light armor instead.
   - balance: '"Archer" specialization now gets the same medium armor as "Bruiser".'
+2026-05-05:
+  Xander3359:
+  - code_imp: Delete duplicate debuffs that did nothing.
