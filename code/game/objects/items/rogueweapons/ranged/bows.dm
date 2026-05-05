@@ -78,7 +78,7 @@
 //bow objs ฅ^•ﻌ•^ฅ
 
 /obj/item/gun/ballistic/revolver/grenadelauncher/bow
-	name = "simple shortbow"
+	name = "shortbow"
 	desc = "This simply hewn shortbow is functional enough. What it lacks in poundage or accuracy, \
 	it makes up for with a decently swift draw."
 	icon = 'icons/roguetown/weapons/32.dmi'
@@ -86,15 +86,6 @@
 	item_state = "bow"
 	experimental_onhip = TRUE
 	experimental_onback = TRUE
-	possible_item_intents = list(
-		/datum/intent/shoot/bow/short,
-		/datum/intent/arc/bow/short,
-		INTENT_GENERIC,
-		)
-	randomspread = 1
-	spread = 1
-	force = 9
-	damfactor = 0.9
 	mag_type = /obj/item/ammo_box/magazine/internal/shot/bow
 	fire_sound = 'sound/combat/Ranged/flatbow-shot-01.ogg'
 	slot_flags = ITEM_SLOT_BACK|ITEM_SLOT_HIP
@@ -106,6 +97,15 @@
 	obj_flags = UNIQUE_RENAME
 	var/heavy_bow = FALSE //used for adding a STR check to the charge time of a bow
 	metalizer_result = /obj/item/restraints/legcuffs/beartrap/armed
+	possible_item_intents = list(
+		/datum/intent/shoot/bow/short,
+		/datum/intent/arc/bow/short,
+		INTENT_GENERIC,
+		)
+	randomspread = 1
+	spread = 1
+	force = 9
+	damfactor = 0.9//combat stats at the end - these are tuned for a Shortbow - high spread, low damage
 
 /obj/item/gun/ballistic/revolver/grenadelauncher/bow/Initialize(mapload)
 	. = ..()
@@ -479,7 +479,7 @@
 	force = 15
 	damfactor = 1.25
 
-/obj/item/gun/ballistic/revolver/grenadelauncher/bow/recurve/eora
+/obj/item/gun/ballistic/revolver/grenadelauncher/bow/recurve/eora//subtype of recurve bow for the sprite sizes, but stats of a shortbow
 	name = "eoran harp-bow"
 	desc = "Strings to pluck."
 	icon = 'icons/roguetown/weapons/special/boweoran64.dmi'
