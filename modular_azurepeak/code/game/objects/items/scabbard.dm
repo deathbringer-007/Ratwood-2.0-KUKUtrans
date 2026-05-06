@@ -537,11 +537,11 @@
 
 	valid_blade = /obj/item/rogueweapon/sword/sabre/mulyeog
 	associated_skill = /datum/skill/combat/shields
-	possible_item_intents = list(SHIELD_BASH, SHIELD_BLOCK)
+	possible_item_intents = list(SHIELD_BASH, SHIELD_SMASH)
 	can_parry = TRUE
 	wdefense = 8
 
-	max_integrity = 0
+	max_integrity = 220
 
 /obj/item/rogueweapon/scabbard/sword/kazengun/noparry
 	name = "ceremonial kazengun scabbard"
@@ -574,7 +574,8 @@
 	icon_state = "kazscab_gold"
 	item_state = "kazscab_gold"
 	valid_blade = /obj/item/rogueweapon/sword/sabre/mulyeog/rumacaptain
-	sellprice = 10
+	max_integrity = 220
+	sellprice = 50
 
 /obj/item/rogueweapon/scabbard/sword/kazengun/kodachi
 	name = "plain lacquer scabbard"
@@ -591,7 +592,7 @@
 	item_state = "kazscabdagger"
 	valid_blade = /obj/item/rogueweapon/huntingknife/idagger/steel/kazengun
 	associated_skill = /datum/skill/combat/shields
-	possible_item_intents = list(SHIELD_BASH, SHIELD_BLOCK)
+	possible_item_intents = list(SHIELD_BASH, SHIELD_SMASH)
 	can_parry = TRUE
 	wdefense = 3
 

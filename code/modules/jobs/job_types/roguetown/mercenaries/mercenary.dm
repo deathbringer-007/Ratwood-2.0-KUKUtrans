@@ -47,6 +47,7 @@
 		/datum/advclass/mercenary/routier,
 		/datum/advclass/mercenary/rumaclan,
 		/datum/advclass/mercenary/rumaclan/sasu,
+		/datum/advclass/mercenary/rumaclan/seonjang,
 		/datum/advclass/mercenary/steppesman,
 		/datum/advclass/mercenary/warscholar,
 		/datum/advclass/mercenary/warscholar/pontifex,
