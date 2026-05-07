@@ -156,6 +156,7 @@
 				GLOB.head_bounties -= removing_bounty
 
 	GLOB.chosen_names -= departing_mob.real_name
+	var/datum/job/old_job = old_assigned_role ? SSjob.GetJob(old_assigned_role) : null
 	if(old_job)
 		LAZYREMOVE(GLOB.actors_list[SSjob.bitflag_to_department(old_job.department_flag, old_job.obsfuscated_job)], departing_mob.mobid)
 	LAZYREMOVE(GLOB.roleplay_ads, departing_mob.mobid)
