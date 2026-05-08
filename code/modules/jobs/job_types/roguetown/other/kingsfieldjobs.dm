@@ -1,15 +1,14 @@
 /datum/job/roguetown/kingsfield_visitor
 	title = "Kingsfield Visitor"
 	faction = "Station"
-	total_positions = 0
-	spawn_positions = 0
+	total_positions = 20
+	spawn_positions = 20
 	selection_color = "#8d8f78"
 	allowed_races = RACES_ALL_KINDS
 	allowed_sexes = list(MALE, FEMALE)
 	tutorial = "You have left your old life and arrived in Kingsfield as a humble visitor."
 	outfit = /datum/outfit/job/roguetown/kingsfield_visitor
 	display_order = JDO_PILGRIM
-	hidden_job = TRUE
 	show_in_credits = FALSE
 	announce_latejoin = FALSE
 	can_random = FALSE
