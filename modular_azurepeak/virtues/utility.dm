@@ -31,7 +31,7 @@
 /datum/virtue/utility/deadened
 	name = "Deadened"
 	desc = "Some terrible incident colours my past, and now, I feel nothing."
-	added_traits = list(TRAIT_NOMOOD)
+	added_traits = list(TRAIT_NOMOOD, TRAIT_DETACHED)
 
 /datum/virtue/utility/light_steps
 	name = "Light Steps"
@@ -202,6 +202,12 @@
 	if(chosen_name)
 		var/instrument_type = instruments[chosen_name]
 		recipient.mind?.special_items[chosen_name] = instrument_type
+
+/datum/virtue/utility/mean
+	name = "Acquired Tastes"
+	desc = "Despite your unorthodox tastes, you know how to keep a partner off-guard and on their back. Sometimes accidents happen in the heat of passion or you enjoy making them, sharing a bed with you is a gamble. You're always prepared to handle a guest with the toys you keep stashed."
+	added_traits = list(TRAIT_DEATHBYSNUSNU, TRAIT_NUTCRACKER)
+	added_stashed_items = list("Bag of Fetish Gear" = /obj/item/storage/roguebag/fetish)
 
 /datum/virtue/utility/larcenous
 	name = "Larcenous"
