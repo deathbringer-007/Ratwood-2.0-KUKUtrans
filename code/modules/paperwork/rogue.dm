@@ -47,6 +47,11 @@
 		mailedto = null
 		update_icon()
 		return
+	if(seal_label && !seal_broken)
+		seal_broken = TRUE
+		update_icon_state()
+		to_chat(user, span_notice("I break the wax seal on [src]."))
+		return
 	if(!open)
 		attack_right(user)
 		return
@@ -63,6 +68,9 @@
 	return
 
 /obj/item/paper/scroll/attack_right(mob/user)
+	if(seal_label && !seal_broken)
+		to_chat(user, span_warning("The wax seal is still intact. I need to unseal it first."))
+		return
 	if(open)
 		slot_flags |= ITEM_SLOT_HIP
 		open = FALSE
@@ -83,6 +91,12 @@
 		throw_range = 7
 		return
 	throw_range = initial(throw_range)
+	if(seal_label && !seal_broken)
+		icon_state = "slip_sealed"
+		open = FALSE
+		name = "sealed scroll"
+		slot_flags |= ITEM_SLOT_HIP
+		return
 	if(open)
 		if(info)
 			icon_state = "scrollwrite"
