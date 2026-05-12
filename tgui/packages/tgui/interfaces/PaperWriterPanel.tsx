@@ -18,6 +18,7 @@ type Data = {
   has_existing_text: boolean;
   signed: boolean;
   font: string;
+  standard_font: string;
   fonts: string[];
   maxlen: number;
   needs_import_confirm: boolean;
@@ -31,6 +32,7 @@ export const PaperWriterPanel = () => {
     has_existing_text,
     signed,
     font: backendFont,
+    standard_font,
     fonts,
     maxlen,
     needs_import_confirm,
@@ -78,38 +80,6 @@ export const PaperWriterPanel = () => {
     <Window width={760} height={680} title="Letter Editor">
       <Window.Content scrollable>
         <Stack vertical fill>
-          <Stack.Item>
-            <Section title="Preview (Saved + Current Input)">
-              <NoticeBox>
-                Supports existing paper formatting: # headers, **bold**, *italics*, ^size^,
-                %s signature, %f field, and -=RRGGBBtext=- color blocks.
-              </NoticeBox>
-              {!!needs_import_confirm && (
-                <NoticeBox danger mt={1}>
-                  This letter was imported from existing formatted text. Saving may simplify older
-                  formatting details. Use Save Anyway to confirm overwrite.
-                </NoticeBox>
-              )}
-              <Box mt={1} mb={1} color="label">
-                {has_existing_text ? 'Existing letter content is immutable.' : 'No saved content yet.'}{' '}
-                New writing is appended below previous text.
-              </Box>
-              <Box mt={1} mb={1} color={signed ? 'good' : 'label'}>
-                Signature status: {signed ? 'Signed' : 'Unsigned'}
-              </Box>
-              <Box
-                style={{
-                  background: '#fdf6e3',
-                  border: '1px solid #b8a27d',
-                  minHeight: '250px',
-                  padding: '10px',
-                  fontFamily: 'serif',
-                }}
-                dangerouslySetInnerHTML={{ __html: preview_html || '' }}
-              />
-            </Section>
-          </Stack.Item>
-
           <Stack.Item>
             <Section title="Input (Append New Text)">
               <Stack mb={1} wrap>
@@ -182,7 +152,7 @@ export const PaperWriterPanel = () => {
                   >
                     {(fonts || []).map((fontName) => (
                       <option key={fontName} value={fontName}>
-                        {fontName === 'default' ? 'Default Pen Font' : fontName}
+                        {fontName === 'default' ? `Standard (${standard_font || 'legacy pen'})` : fontName}
                       </option>
                     ))}
                   </select>
@@ -203,15 +173,39 @@ export const PaperWriterPanel = () => {
           </Stack.Item>
 
           <Stack.Item>
+            <Section title="Preview (Saved + Current Input)">
+              <NoticeBox>
+                Supports existing paper formatting: # headers, **bold**, *italics*, ^size^,
+                %s signature, %f field, and -=RRGGBBtext=- color blocks.
+              </NoticeBox>
+              {!!needs_import_confirm && (
+                <NoticeBox danger mt={1}>
+                  This letter was imported from existing formatted text. Saving may simplify older
+                  formatting details. Use Save Anyway to confirm overwrite.
+                </NoticeBox>
+              )}
+              <Box mt={1} mb={1} color="label">
+                {has_existing_text ? 'Existing letter content is immutable.' : 'No saved content yet.'}{' '}
+                New writing is appended below previous text.
+              </Box>
+              <Box mt={1} mb={1} color={signed ? 'good' : 'label'}>
+                Signature status: {signed ? 'Signed' : 'Unsigned'}
+              </Box>
+              <Box
+                style={{
+                  background: '#fdf6e3',
+                  border: '1px solid #b8a27d',
+                  minHeight: '250px',
+                  padding: '10px',
+                  fontFamily: 'serif',
+                }}
+                dangerouslySetInnerHTML={{ __html: preview_html || '' }}
+              />
+            </Section>
+          </Stack.Item>
+
+          <Stack.Item>
             <Stack>
-              <Stack.Item>
-                <Button
-                  color="good"
-                  icon="save"
-                  onClick={() => act('save')}>
-                  Save
-                </Button>
-              </Stack.Item>
               <Stack.Item>
                 <Button
                   color="good"
@@ -220,16 +214,6 @@ export const PaperWriterPanel = () => {
                   Sign
                 </Button>
               </Stack.Item>
-              {!!needs_import_confirm && (
-                <Stack.Item>
-                  <Button
-                    color="average"
-                    icon="exclamation-triangle"
-                    onClick={() => act('save', { force: 1 })}>
-                    Save Anyway
-                  </Button>
-                </Stack.Item>
-              )}
               <Stack.Item>
                 <Button
                   color="average"

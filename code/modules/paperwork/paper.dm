@@ -110,6 +110,7 @@
 		return "default"
 	var/list/allowed_fonts = list(
 		"default",
+		FOUNTAIN_PEN_FONT,
 		"Times New Roman",
 		"Garamond",
 		"Book Antiqua",
@@ -127,29 +128,31 @@
 		return FALSE
 
 	var/chunk_input = writer_draft || ""
-	if(sign_after)
-		chunk_input = length(chunk_input) ? "[chunk_input]\n\n%s" : "%s"
 
-	if(!length(chunk_input))
+	if(!length(chunk_input) && !sign_after)
 		to_chat(user, span_warning("I have nothing to add."))
 		return FALSE
 
-	var/chunk_html = parsepencode(chunk_input, P, user, FALSE, sanitize_writer_font(writer_font))
-	if(!chunk_html)
-		to_chat(user, span_warning("I have nothing to add."))
-		return FALSE
+	var/chunk_html = null
+	if(length(chunk_input))
+		chunk_html = parsepencode(chunk_input, P, user, FALSE, sanitize_writer_font(writer_font))
+		if(!chunk_html)
+			to_chat(user, span_warning("I have nothing to add."))
+			return FALSE
 
-	var/new_len = length(info) + length(chunk_html)
-	if(info)
-		new_len += 4 // <br>
-	if(new_len > maxlen)
-		to_chat(user, span_warning("Too long. Try again."))
-		return FALSE
+	if(chunk_html)
+		var/new_len = length(info) + length(chunk_html)
+		if(info)
+			new_len += 4 // <br>
+		if(new_len > maxlen)
+			to_chat(user, span_warning("Too long. Try again."))
+			return FALSE
 
-	if(info)
-		info += "<br>[chunk_html]"
-	else
-		info = chunk_html
+	if(chunk_html)
+		if(info)
+			info += "<br>[chunk_html]"
+		else
+			info = chunk_html
 
 	writer_draft = ""
 	writer_body = null
@@ -230,7 +233,8 @@
 	var/list/data = list()
 	data["maxlen"] = maxlen
 	data["font"] = writer_font
-	data["fonts"] = list("default", "Times New Roman", "Garamond", "Book Antiqua", "Courier New", "Verdana")
+	data["standard_font"] = FOUNTAIN_PEN_FONT
+	data["fonts"] = list("default", FOUNTAIN_PEN_FONT, "Times New Roman", "Garamond", "Book Antiqua", "Courier New", "Verdana")
 	return data
 
 /obj/item/paper/ui_data(mob/user)
@@ -256,10 +260,6 @@
 			var/new_draft = params["draft"] || ""
 			writer_draft = copytext(new_draft, 1, maxlen + 1)
 			writer_font = sanitize_writer_font(params["font"])
-			return TRUE
-
-		if("save")
-			append_writer_chunk(user, FALSE)
 			return TRUE
 
 		if("sign")
@@ -336,8 +336,8 @@
 		return
 	name = initial(name)
 	throw_range = initial(throw_range)
-	if(seal_label)
-		icon_state = "paper_sealed"
+	if(seal_label && !seal_broken)
+		icon_state = "slip_sealed"
 		return
 	if(info)
 		icon_state = "paperwrite"
@@ -372,7 +372,8 @@
 	if(mailer)
 		return
 	if(seal_label && !seal_broken)
-		seal_broken = TRUE
+		to_chat(user, span_warning("The wax seal is still intact. I need to unseal it first."))
+		return
 	if(in_range(user, src) || isobserver(user))
 		user << browse_rsc('html/book.png')
 		var/body_border_css = window_rim_style ? "box-sizing:border-box;[window_rim_style]" : ""
@@ -434,6 +435,11 @@
 		victim.adjust_fire_stacks(15)
 		victim.ignite_mob()
 		victim.visible_message(span_danger("[user] bursts into flames upon reading [src]!"))
+	if(seal_label && !seal_broken)
+		seal_broken = TRUE
+		update_icon_state()
+		to_chat(user, span_notice("I break the wax seal on [src]."))
+		return
 	read(user)
 	if(rigged && (SSevents.holidays && SSevents.holidays[APRIL_FOOLS]))
 		if(!spam_flag)
@@ -506,7 +512,9 @@
 		return
 
 	t = parsemarkdown(t, user, iscrayon)
-	var/pen_font = custom_font || FOUNTAIN_PEN_FONT
+	var/pen_font = FOUNTAIN_PEN_FONT
+	if(custom_font && custom_font != "default")
+		pen_font = custom_font
 
 	if(istype(P, /obj/item/natural/thorn))
 		t = "<font face=\"[pen_font]\" color=#862f20>[t]</font>"
