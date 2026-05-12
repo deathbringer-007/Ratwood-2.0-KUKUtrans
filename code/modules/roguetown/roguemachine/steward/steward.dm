@@ -190,7 +190,7 @@
 			if(findtext(num2text(newrate), "."))
 				return
 			newrate = CLAMP(newrate, 0, D.generation_max)
-			scom_announce("Rotwood Vale will now import [D.passive_generation] [D.name] every 5 hours.")
+			scom_announce("Rotwood Vale will now import [newrate] [D.name] every 5 hours.")
 			D.passive_generation = newrate
 	if(href_list["setlimit"])
 		var/datum/roguestock/D = locate(href_list["setlimit"]) in SStreasury.stockpile_datums
