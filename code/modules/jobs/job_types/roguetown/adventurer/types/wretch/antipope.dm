@@ -220,7 +220,7 @@
 	if (!H.restrained())
 		to_chat(src, span_warning ("My victim needs to be restrained in order to do this!"))
 		return
-	if(!istype(S, /obj/item/clothing/neck/roguetown/psicross/inhumen/aalloy))
+	if(!istype(S, /obj/item/clothing/neck/roguetown/psicross/inhumen/))
 		to_chat(src, span_warning("I need to be holding a zcross to extract this divination!"))
 		return
 	for(var/obj/structure/fluff/psycross/zizocross/N in oview(5, src))
