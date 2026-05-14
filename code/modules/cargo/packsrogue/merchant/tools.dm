@@ -182,6 +182,11 @@
 	cost = 20
 	contains = list(/obj/item/cooking/pan)
 
+/datum/supply_pack/rogue/tools/tallowpot
+	name = "Tallowpot"
+	cost = 20
+	contains = list(/obj/item/inqarticles/tallowpot)
+
 /datum/supply_pack/rogue/tools/shopkeyy
 	name = "Spare Shopkey"
 	cost = 10
