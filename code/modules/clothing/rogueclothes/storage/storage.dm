@@ -47,6 +47,7 @@
 	sewrepair = TRUE
 	sellprice = 10
 	resistance_flags = FIRE_PROOF
+	dropshrink = 0.8
 
 /obj/item/storage/belt/rogue/leather/plaquegold
 	name = "plaque belt"
