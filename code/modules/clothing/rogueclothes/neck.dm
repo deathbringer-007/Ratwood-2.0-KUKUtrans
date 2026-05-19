@@ -442,6 +442,7 @@
 	grid_width = 32
 	grid_height = 32
 	nudist_approved = TRUE
+	dropshrink = 0.7
 
 /obj/item/clothing/neck/roguetown/psicross/mob_can_equip(mob/living/M, mob/living/equipper, slot, disable_warning = FALSE, bypass_equip_delay_self = FALSE)
 	..()
@@ -1081,6 +1082,7 @@
 	salvage_result = null
 	smeltresult = null
 	nudist_approved = TRUE
+	dropshrink = 0.7
 
 /obj/item/clothing/neck/roguetown/carved/jadeamulet
 	name = "jade amulet"
