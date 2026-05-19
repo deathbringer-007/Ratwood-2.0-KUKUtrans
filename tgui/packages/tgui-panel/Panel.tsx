@@ -4,8 +4,9 @@
  * @license MIT
  */
 
+import React from 'react';
 import { Pane } from 'tgui/layouts';
-import { Button, Section, Stack, Box } from 'tgui-core/components';
+import { Box, Button, Section, Stack } from 'tgui-core/components';
 
 import { NowPlayingWidget, useAudio } from './audio';
 import { ChatPanel, ChatTabs } from './chat';
@@ -13,6 +14,7 @@ import { useGame } from './game';
 import { Notifications } from './Notifications';
 import { PingIndicator } from './ping';
 import { ReconnectButton } from './reconnect';
+import { SettingsPanel, useSettings } from './settings';
 
 export const Panel = (props) => {
   const audio = useAudio();
@@ -34,13 +36,13 @@ export const Panel = (props) => {
       <ul>
         <li><b>**bold**</b> → <b>bold</b></li>
         <li><i>*italics*</i> → <i>italics</i></li>
-        <li><span style={{fontFamily:'monospace'}}># Header</span> → <b>Header</b></li>
-        <li><span style={{fontFamily:'monospace'}}>((small))</span> → <span style={{fontSize:'smaller'}}>small</span></li>
-        <li><span style={{fontFamily:'monospace'}}>&lt;color=862F20&gt;text&lt;/color&gt;</span> → <span style={{color:'#862F20'}}>text</span></li>
-        <li><span style={{fontFamily:'monospace'}}>* Bullet</span> → • Bullet</li>
-        <li><span style={{fontFamily:'monospace'}}>&lt;br&gt;</span> → line break</li>
-        <li><span style={{fontFamily:'monospace'}}>&lt;b&gt;text&lt;/b&gt;</span> → <b>text</b></li>
-        <li><span style={{fontFamily:'monospace'}}>&lt;i&gt;text&lt;/i&gt;</span> → <i>text</i></li>
+        <li><span style={{ fontFamily: 'monospace' }}># Header</span> → <b>Header</b></li>
+        <li><span style={{ fontFamily: 'monospace' }}>((small))</span> → <span style={{ fontSize: 'smaller' }}>small</span></li>
+        <li><span style={{ fontFamily: 'monospace' }}>&lt;color=862F20&gt;text&lt;/color&gt;</span> → <span style={{ color: '#862F20' }}>text</span></li>
+        <li><span style={{ fontFamily: 'monospace' }}>* Bullet</span> → • Bullet</li>
+        <li><span style={{ fontFamily: 'monospace' }}>&lt;br&gt;</span> → line break</li>
+        <li><span style={{ fontFamily: 'monospace' }}>&lt;b&gt;text&lt;/b&gt;</span> → <b>text</b></li>
+        <li><span style={{ fontFamily: 'monospace' }}>&lt;i&gt;text&lt;/i&gt;</span> → <i>text</i></li>
       </ul>
       <Button color="average" onClick={() => setShowFormattingHelp(false)}>
         Close
