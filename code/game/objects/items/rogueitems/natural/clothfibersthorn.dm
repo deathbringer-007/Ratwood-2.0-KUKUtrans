@@ -157,6 +157,7 @@
 	bundletype = /obj/item/natural/bundle/cloth
 	sellprice = 4
 	detail_tag = "_soaked"
+	dropshrink = 0.9
 	var/wet = 0
 	/// Effectiveness when used as a bandage, how much it'll lower the bloodloss, bloodloss will get multiplied by this.
 	var/bandage_effectiveness = 0.5

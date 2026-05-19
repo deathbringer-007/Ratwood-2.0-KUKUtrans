@@ -214,6 +214,7 @@
 	slot_flags = ITEM_SLOT_NECK
 	flags_inv = HIDEFACE|HIDEFACIALHAIR|HIDESNOUT
 	cansnout = TRUE
+	dropshrink = 0.8
 
 /obj/item/clothing/neck/roguetown/chaincoif/chainmantle/ComponentInitialize()
 	AddComponent(/datum/component/adjustable_clothing, (NECK), null, null, 'sound/foley/equip/equip_armor_chain.ogg', null, (UPD_HEAD|UPD_MASK|UPD_NECK))	//Chain coif.

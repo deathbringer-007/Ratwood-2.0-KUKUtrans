@@ -10,6 +10,7 @@
 	resistance_flags = FLAMMABLE
 	drop_sound = 'sound/foley/dropsound/cloth_drop.ogg'
 	sellprice = 8
+	dropshrink = 0.9
 
 /obj/item/natural/cured/essence
 	name = "essence of wilderness"
