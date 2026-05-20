@@ -195,10 +195,6 @@
 	if(!mob)
 		return
 
-	msg = copytext_char(sanitize(msg), 1, MAX_MESSAGE_LEN)
-	if(!msg)
-		return
-
 	if(!(prefs.chat_toggles & CHAT_OOC))
 		to_chat(src, span_danger("You have OOC muted."))
 		return
