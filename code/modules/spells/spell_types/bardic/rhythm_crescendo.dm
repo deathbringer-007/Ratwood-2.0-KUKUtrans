@@ -1,8 +1,7 @@
 #define RHYTHM_NONE 0
 #define RHYTHM_RESONATING 1
 #define RHYTHM_CONCUSSIVE 2
-#define RHYTHM_FRIGID 3
-#define RHYTHM_REGENERATING 4
+#define RHYTHM_REGENERATING 3
 
 #define RHYTHM_COOLDOWN 7 SECONDS
 #define RHYTHM_WINDOW 8 SECONDS
@@ -27,8 +26,6 @@
 			return "Resonating"
 		if(RHYTHM_CONCUSSIVE)
 			return "Concussive"
-		if(RHYTHM_FRIGID)
-			return "Frigid"
 		if(RHYTHM_REGENERATING)
 			return "Regenerating"
 	return "Unknown"
@@ -52,18 +49,13 @@
 			turfs += R
 	return turfs
 
-/proc/bardic_apply_frost_stack(mob/living/target, stacks = 1)
-	if(!target)
+/proc/bardic_clear_primed_rhythms(mob/living/carbon/human/user, obj/effect/proc_holder/spell/self/rhythm/except)
+	if(!user?.mind)
 		return
-	for(var/i in 1 to stacks)
-		if(target.has_status_effect(/datum/status_effect/buff/frostbite))
-			return
-		if(target.has_status_effect(/datum/status_effect/buff/frost))
-			playsound(get_turf(target), 'sound/combat/fracture/fracturedry (1).ogg', 80, TRUE, soundping = TRUE)
-			target.remove_status_effect(/datum/status_effect/buff/frost)
-			target.apply_status_effect(/datum/status_effect/buff/frostbite)
-			return
-		target.apply_status_effect(/datum/status_effect/buff/frost)
+	for(var/obj/effect/proc_holder/spell/self/rhythm/known_rhythm in user.mind.spell_list)
+		if(known_rhythm == except || !known_rhythm.primed)
+			continue
+		known_rhythm.clear_prime(user)
 
 /datum/rhythm_tracker
 	var/greater_stacks = 0
@@ -140,7 +132,16 @@
 			return TRUE
 	return FALSE
 
+/obj/effect/proc_holder/spell/self/rhythm/proc/clear_prime(mob/living/user, cancel_timer = TRUE)
+	primed = FALSE
+	UnregisterSignal(user, COMSIG_MOB_ITEM_ATTACK_POST_SWINGDELAY)
+	if(cancel_timer && prime_timer_id)
+		deltimer(prime_timer_id)
+	prime_timer_id = null
+	user.remove_filter(RHYTHM_FILTER)
+
 /obj/effect/proc_holder/spell/self/rhythm/proc/prime_rhythm(mob/living/carbon/human/user)
+	bardic_clear_primed_rhythms(user, src)
 	primed = TRUE
 	user.add_filter(RHYTHM_FILTER, 2, list("type" = "outline", "color" = BARDIC_RHYTHM_COLOR, "alpha" = 100, "size" = 1))
 	to_chat(user, span_info("I attune my weapon to a [name] rhythm."))
@@ -154,12 +155,7 @@
 		return
 	if(!isliving(target) || target == user || target.stat == DEAD)
 		return
-	primed = FALSE
-	UnregisterSignal(user, COMSIG_MOB_ITEM_ATTACK_POST_SWINGDELAY)
-	if(prime_timer_id)
-		deltimer(prime_timer_id)
-		prime_timer_id = null
-	user.remove_filter(RHYTHM_FILTER)
+	clear_prime(user)
 	apply_rhythm(target, user)
 	var/mob/living/carbon/human/H = user
 	if(istype(H) && H.inspiration?.rhythm_tracker)
@@ -173,17 +169,13 @@
 /obj/effect/proc_holder/spell/self/rhythm/proc/rhythm_fizzle(mob/living/user)
 	if(!primed)
 		return
-	primed = FALSE
-	prime_timer_id = null
-	UnregisterSignal(user, COMSIG_MOB_ITEM_ATTACK_POST_SWINGDELAY)
-	user.remove_filter(RHYTHM_FILTER)
+	clear_prime(user, FALSE)
 	to_chat(user, span_warning("I failed to strike in time. My rhythm fades."))
 
 /obj/effect/proc_holder/spell/self/rhythm/Destroy()
 	if(primed && action?.owner)
 		var/mob/living/user = action.owner
-		UnregisterSignal(user, COMSIG_MOB_ITEM_ATTACK_POST_SWINGDELAY)
-		user.remove_filter(RHYTHM_FILTER)
+		clear_prime(user)
 	if(prime_timer_id)
 		deltimer(prime_timer_id)
 		prime_timer_id = null
@@ -221,21 +213,6 @@
 		target.safe_throw_at(get_ranged_target_turf(target, push_dir, 1), 1, 1, user, force = MOVE_FORCE_STRONG)
 	target.visible_message(span_danger("[user]'s strike repels [target] backward!"), span_userdanger("[user]'s strike repels me backward!"))
 	playsound(target, 'sound/magic/repulse.ogg', 50, TRUE)
-
-/obj/effect/proc_holder/spell/self/rhythm/frigid
-	name = "Frigid Rhythm"
-	desc = "Prime a strike that applies a frost stack."
-	action_icon_state = "rhythm_frigid"
-	rhythm_type = RHYTHM_FRIGID
-
-/obj/effect/proc_holder/spell/self/rhythm/frigid/apply_rhythm(mob/living/target, mob/living/user)
-	bardic_apply_frost_stack(target)
-	if(ishuman(target))
-		var/mob/living/carbon/human/H = target
-		H.apply_weather_temperature(-23)
-	new /obj/effect/temp_visual/snap_freeze(get_turf(target))
-	target.visible_message(span_danger("[user]'s strike chills [target]!"), span_userdanger("A deathly chill seeps into my body from [user]'s strike!"))
-	playsound(target, 'sound/magic/whiteflame.ogg', 50, TRUE)
 
 /obj/effect/proc_holder/spell/self/rhythm/regenerating
 	name = "Regenerating Rhythm"
@@ -325,8 +302,6 @@
 			crescendo_resonating(H)
 		if(RHYTHM_CONCUSSIVE)
 			crescendo_concussive(H)
-		if(RHYTHM_FRIGID)
-			crescendo_frigid(H)
 		if(RHYTHM_REGENERATING)
 			crescendo_regenerating(H)
 	H.inspiration.rhythm_tracker.greater_stacks = 0
@@ -377,18 +352,6 @@
 					push_dir = user.dir
 				L.safe_throw_at(get_ranged_target_turf(L, push_dir, 3), 3, 2, user, force = MOVE_FORCE_STRONG)
 			L.visible_message(span_danger("[L] is repelled by the concussive blast!"))
-
-/obj/effect/proc_holder/spell/self/crescendo/proc/crescendo_frigid(mob/living/carbon/human/user)
-	for(var/turf/T in bardic_get_frontal_turfs(user))
-		new /obj/effect/temp_visual/snap_freeze(T)
-		for(var/mob/living/L in T)
-			if(L == user || L.stat == DEAD)
-				continue
-			bardic_apply_frost_stack(L, 3)
-			if(ishuman(L))
-				var/mob/living/carbon/human/H = L
-				H.apply_weather_temperature(-35)
-			L.visible_message(span_danger("A wave of frost chills [L] to the bone!"))
 
 /obj/effect/proc_holder/spell/self/crescendo/proc/crescendo_regenerating(mob/living/carbon/human/user)
 	if(!user.inspiration)
