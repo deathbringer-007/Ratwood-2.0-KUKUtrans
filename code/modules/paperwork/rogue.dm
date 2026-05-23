@@ -23,9 +23,6 @@
 		if(info && open)
 			. += "<a href='?src=[REF(src)];read=1'>Read</a>"
 
-/obj/item/paper/scroll/Initialize(mapload)
-	. = ..()
-
 /obj/item/paper/scroll/attackby(obj/item/P, mob/living/carbon/human/user, params)
 	if(istype(P, /obj/item/natural/thorn) || istype(P, /obj/item/natural/feather))
 		if(!open)

@@ -93,16 +93,10 @@
 	var/cached_mailer
 	var/cached_mailedto
 	var/trapped
-	/// Raw text source used by the tgui writer panel.
-	var/writer_body
-	/// True when writer_body was derived from existing HTML instead of previously authored raw text.
-	var/writer_body_imported = FALSE
 	/// Append-only draft text used by the tgui writer panel input box.
 	var/writer_draft = ""
 	/// Optional font override selected in the tgui writer panel.
 	var/writer_font = "default"
-	/// Whether this document has been signed via the writer panel.
-	var/writer_signed = FALSE
 	/// Latest accepted writer action sequence from tgui; older actions are ignored.
 	var/writer_action_seq = 0
 
@@ -170,10 +164,6 @@
 			info = chunk_html
 
 	writer_draft = ""
-	writer_body = null
-	writer_body_imported = FALSE
-	if(sign_after)
-		writer_signed = TRUE
 
 	updateinfolinks()
 	update_icon_state()
@@ -199,16 +189,6 @@
 	if(length(preview))
 		return "[preview]<br>[chunk_preview]"
 	return chunk_preview
-
-/obj/item/paper/proc/get_writer_body()
-	if(isnull(writer_body))
-		if(info)
-			writer_body = strip_html_simple(info, maxlen)
-			writer_body_imported = findtext(info, "<") ? TRUE : FALSE
-		else
-			writer_body = ""
-			writer_body_imported = FALSE
-	return writer_body
 
 /obj/item/paper/proc/can_use_writer(mob/living/carbon/human/user, obj/item/P)
 	if(!user)
@@ -258,9 +238,7 @@
 	var/list/data = list()
 	data["draft"] = writer_draft
 	data["font"] = writer_font
-	data["needs_import_confirm"] = FALSE
 	data["preview_html"] = build_writer_preview(user)
-	data["has_existing_text"] = length(info) > 0
 	return data
 
 /obj/item/paper/ui_act(action, list/params, datum/tgui/ui, datum/ui_state/state)
@@ -615,8 +593,6 @@
 
 /obj/item/paper/proc/clearpaper()
 	info = null
-	writer_body = ""
-	writer_body_imported = FALSE
 	stamps = null
 	seal_label = null
 	seal_color = initial(seal_color)
@@ -747,8 +723,6 @@
 				to_chat(usr, "<span class='warning'>Too long. Try again.</span>")
 				return
 			addtofield(field_num, t) // Field-only writing via read links.
-			writer_body = null
-			writer_body_imported = FALSE
 			playsound(src, 'sound/items/write.ogg', 100, FALSE)
 			format_browse(build_read_info(TRUE), usr)
 			update_icon_state()

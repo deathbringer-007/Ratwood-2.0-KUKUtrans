@@ -17,8 +17,8 @@ GLOBAL_DATUM_INIT(fax_panel, /datum/fax_panel, new)
 	var/hermes_cache_expires = 0
 	var/player_cache_expires = 0
 
-/datum/fax_panel/proc/refresh_ui_cache()
-	if(world.time >= hermes_cache_expires)
+/datum/fax_panel/proc/refresh_ui_cache(force = FALSE)
+	if(force || world.time >= hermes_cache_expires)
 		var/list/new_hermes_list = list()
 		for(var/obj/structure/roguemachine/mail/H in SSroguemachine.hermailers)
 			new_hermes_list += list(list(
@@ -28,7 +28,7 @@ GLOBAL_DATUM_INIT(fax_panel, /datum/fax_panel, new)
 		cached_hermes_list = new_hermes_list
 		hermes_cache_expires = world.time + 20
 
-	if(world.time >= player_cache_expires)
+	if(force || world.time >= player_cache_expires)
 		var/list/new_player_list = list()
 		for(var/mob/living/carbon/human/H in GLOB.human_list)
 			if(H.real_name && H.client)
@@ -60,6 +60,10 @@ GLOBAL_DATUM_INIT(fax_panel, /datum/fax_panel, new)
 		return TRUE
 
 	switch(action)
+		if("refresh")
+			refresh_ui_cache(TRUE)
+			return TRUE
+
 		if("send")
 			var/mob/user = ui.user
 			if(!check_rights_for(user.client, R_ADMIN))

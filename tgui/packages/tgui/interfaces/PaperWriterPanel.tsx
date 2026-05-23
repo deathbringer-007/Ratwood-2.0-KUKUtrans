@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
   Box,
   Button,
-  NoticeBox,
   Section,
   Stack,
 } from 'tgui-core/components';
@@ -13,12 +12,10 @@ import { Window } from '../layouts';
 type Data = {
   draft: string;
   preview_html: string;
-  has_existing_text: boolean;
   font: string;
   standard_font: string;
   fonts: string[];
   maxlen: number;
-  needs_import_confirm: boolean;
 };
 
 export const PaperWriterPanel = () => {
@@ -30,7 +27,6 @@ export const PaperWriterPanel = () => {
     standard_font,
     fonts,
     maxlen,
-    needs_import_confirm,
   } = data;
 
   const [draft, setDraft] = useState(initialDraft || '');
@@ -243,12 +239,6 @@ export const PaperWriterPanel = () => {
 
           <Stack.Item>
             <Section title="Preview">
-              {!!needs_import_confirm && (
-                <NoticeBox danger mt={1}>
-                  This letter was imported from existing formatted text. Saving may simplify older
-                  formatting details. Use Save Anyway to confirm overwrite.
-                </NoticeBox>
-              )}
               <Box
                 style={{
                   background: '#fdf6e3',

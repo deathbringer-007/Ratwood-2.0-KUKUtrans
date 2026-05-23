@@ -217,6 +217,11 @@ export const FaxPanel = (props) => {
                     By HERMES #
                   </Button>
                 </Stack.Item>
+                <Stack.Item>
+                  <Button icon="sync" onClick={() => act('refresh')}>
+                    Refresh
+                  </Button>
+                </Stack.Item>
               </Stack>
               <Box mt={1}>
                 {sendMode === 'player' ? (
