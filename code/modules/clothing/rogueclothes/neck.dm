@@ -212,6 +212,7 @@
 	slot_flags = ITEM_SLOT_NECK
 	flags_inv = HIDEFACE|HIDEFACIALHAIR|HIDESNOUT
 	cansnout = TRUE
+	dropshrink = 0.8
 
 /obj/item/clothing/neck/roguetown/chaincoif/chainmantle/ComponentInitialize()
 	AddComponent(/datum/component/adjustable_clothing, (NECK), null, null, 'sound/foley/equip/equip_armor_chain.ogg', null, (UPD_HEAD|UPD_MASK|UPD_NECK))	//Chain coif.
@@ -426,7 +427,6 @@
 	name = "psycross"
 	desc = "'With every broken bone, I swore I lived!'"
 	icon_state = "psycross"
-	//dropshrink = 0.75
 	resistance_flags = FIRE_PROOF
 	slot_flags = ITEM_SLOT_NECK|ITEM_SLOT_HIP|ITEM_SLOT_WRISTS
 	possible_item_intents = list(/datum/intent/use, /datum/intent/special/magicarc)
@@ -436,6 +436,7 @@
 	grid_width = 32
 	grid_height = 32
 	nudist_approved = TRUE
+	dropshrink = 0.6
 
 /obj/item/clothing/neck/roguetown/psicross/mob_can_equip(mob/living/M, mob/living/equipper, slot, disable_warning = FALSE, bypass_equip_delay_self = FALSE)
 	..()
@@ -556,7 +557,6 @@
 	desc = "'Purity afloat, for paradise awaits!'"
 	icon_state = "psycross_g"
 	item_state = "psycross_g"
-	//dropshrink = 0.75
 	sellprice = 100
 
 /obj/item/clothing/neck/roguetown/psicross/reform
@@ -603,7 +603,7 @@
 	desc = "In moments of quiet it whispers softly, as though deciphering the silence itself."
 	icon_state = "talkstone"
 	item_state = "talkstone"
-	//dropshrink = 0.75
+	dropshrink = 0.75
 	resistance_flags = FIRE_PROOF
 	allowed_race = CLOTHED_RACES_TYPES
 	sellprice = 70
@@ -613,7 +613,7 @@
 	name = "amulet of appraisal"
 	desc = "An amulet with a pristine eye embedded into it. Blind to everything, but to that which shines in gold."
 	icon_state = "horus"
-	//dropshrink = 0.75
+	dropshrink = 0.75
 	resistance_flags = FIRE_PROOF
 	sellprice = 80
 	anvilrepair = /datum/skill/craft/armorsmithing
@@ -641,7 +641,7 @@
 	desc = "Made out of the silver from the Zybantine mercenaries' first pay. A tradition is kept between these hired blades: to give this one away to someone is to symbolize a debt in their favor - to be redeemed by any other mercenary in times of need."
 	icon_state = "shalal"
 	slot_flags = ITEM_SLOT_NECK|ITEM_SLOT_HIP|ITEM_SLOT_WRISTS|ITEM_SLOT_RING		//Hey I guess you could pretend it is wrapped around your hand? Just keep it on, don't be a hoe.
-	//dropshrink = 0.75
+	dropshrink = 0.75
 	resistance_flags = FIRE_PROOF
 	sellprice = 30		// what if the economy crashes...........
 	anvilrepair = /datum/skill/craft/armorsmithing
@@ -650,7 +650,7 @@
 	name = "ornate amulet"
 	desc = "A beautiful amulet made of solid gold."
 	icon_state = "ornateamulet"
-	//dropshrink = 0.75
+	dropshrink = 0.75
 	resistance_flags = FIRE_PROOF
 	sellprice = 100
 	anvilrepair = /datum/skill/craft/armorsmithing
@@ -679,7 +679,7 @@
 	name = "skull amulet"
 	desc = "Gold shaped into the form of a skull and strung into an amulet."
 	icon_state = "skullamulet"
-	//dropshrink = 0.75
+	dropshrink = 0.75
 	resistance_flags = FIRE_PROOF
 	sellprice = 100
 	anvilrepair = /datum/skill/craft/armorsmithing
@@ -699,7 +699,7 @@
 	icon_state = "collar_rope"
 	item_state = "collar_rope"
 	resistance_flags = FIRE_PROOF
-	dropshrink = 0.5
+	dropshrink = 0.6
 	leashable = TRUE
 	bellsound = FALSE
 	bell = FALSE
@@ -715,7 +715,6 @@
 	item_state = "leathercollar"
 	leashable = TRUE
 	resistance_flags = FIRE_PROOF
-	dropshrink = 0.5
 	bellsound = FALSE
 	bell = FALSE
 
@@ -728,7 +727,6 @@
 	item_state = "cowbellcollar"
 	leashable = TRUE
 	resistance_flags = FIRE_PROOF
-	dropshrink = 0.5
 	bellsound = TRUE
 
 /obj/item/clothing/neck/roguetown/collar/cowbell/Initialize(mapload)
@@ -744,7 +742,6 @@
 	item_state = "catbellcollar"
 	leashable = TRUE
 	resistance_flags = FIRE_PROOF
-	dropshrink = 0.5
 	bellsound = TRUE
 
 /obj/item/clothing/neck/roguetown/collar/catbell/Initialize(mapload)
@@ -759,7 +756,6 @@
 	icon_state = "feldcollar"
 	item_state = "feldcollar"
 	resistance_flags = FIRE_PROOF
-	dropshrink = 0.5
 	slot_flags = ITEM_SLOT_NECK|ITEM_SLOT_MASK
 	body_parts_covered = NECK|FACE
 	nudist_approved = TRUE
@@ -772,7 +768,6 @@
 	icon_state = "surgcollar"
 	item_state = "surgcollar"
 	resistance_flags = FIRE_PROOF
-	dropshrink = 0.5
 	slot_flags = ITEM_SLOT_NECK|ITEM_SLOT_MASK
 	body_parts_covered = NECK|FACE
 	nudist_approved = TRUE
@@ -810,7 +805,6 @@
 	desc = "A massive gemerald, meticulously chiseled into a skull and affixed to a chain. </br>It's mocking me, isn't it?"
 	slot_flags = ITEM_SLOT_NECK
 	icon_state = "skullamulet"
-	//dropshrink = 0.75
 	color = "#00FF00"
 	resistance_flags = FIRE_PROOF
 	sellprice = 222
@@ -1000,7 +994,7 @@
 	blocksound = PLATEHIT
 	icon = 'icons/roguetown/clothing/special/blkknight.dmi'
 	mob_overlay_icon = 'icons/roguetown/clothing/special/onmob/blkknight.dmi'
-	//dropshrink = 0.75
+	dropshrink = 0.75
 	resistance_flags = FIRE_PROOF
 	sellprice = 666
 	static_price = TRUE
@@ -1075,6 +1069,7 @@
 	salvage_result = null
 	smeltresult = null
 	nudist_approved = TRUE
+	dropshrink = 0.75
 
 /obj/item/clothing/neck/roguetown/carved/jadeamulet
 	name = "jade amulet"

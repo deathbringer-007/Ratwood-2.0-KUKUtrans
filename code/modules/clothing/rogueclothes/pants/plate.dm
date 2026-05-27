@@ -39,6 +39,7 @@
 	desc = "Polished gilbranze plates, layered atop silken chausses. Only the few who had embraced undeath were spared from Zizo's ascension; now, they command the undying legionnaires who march forth to sunder creation in Her name."
 	icon_state = "ancientplate_legs"
 	smeltresult = /obj/item/ingot/aaslag
+	dropshrink = null
 
 /obj/item/clothing/under/roguetown/platelegs/ancient/decrepit
 	name = "decrepit plate chausses"
@@ -46,6 +47,12 @@
 	max_integrity = ARMOR_INT_LEG_DECREPIT_PLATE
 	color = "#bb9696"
 	anvilrepair = null
+
+/obj/item/clothing/under/roguetown/platelegs/paalloy
+	name = "ancient plate chausses"
+	desc = "Polished gilbranze plates, layered atop silken chausses. Only the few who had embraced undeath were spared from Zizo's ascension; now, they command the undying legionnaires who march forth to sunder creation in Her name."
+	icon_state = "ancientplate_legs"
+	smeltresult = /obj/item/ingot/aaslag
 
 /obj/item/clothing/under/roguetown/platelegs/graggar
 	name = "vicious leggings"
@@ -110,3 +117,4 @@
 	item_state = "plate_skirt"
 	body_parts_covered = GROIN
 	armor_class = ARMOR_CLASS_LIGHT
+	dropshrink = null
