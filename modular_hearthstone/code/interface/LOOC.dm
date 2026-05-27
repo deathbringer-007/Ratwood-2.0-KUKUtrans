@@ -110,11 +110,12 @@
 		else
 			recipient_admin_label = recipient_label
 
-	var/admin_info = " ([s_ckey]) [ADMIN_FLW(S)] <A href='?_src_=holder;[HrefToken()];mute=[s_ckey];mute_type=[MUTE_LOOC]'><font color='[(prefs.muted & MUTE_LOOC) ? "red" : "blue"]'>&#91;MUTE&#93;</font></a>"
+	var/admin_info = " ([s_ckey]) [ADMIN_FLW(S)] <A href='?_src_=holder;[HrefToken()];mute=[s_ckey];mute_type=[MUTE_LOOC]'><font color='[(prefs.muted & MUTE_LOOC) ? "red" : "blue"]'>\[MUTE\]</font></a>"
+	var/prefix_text = span_prefix("[pfx]:")
 
-	var/msg_reg = "<font color='#9DCCFF'><b><span class='prefix'>[pfx]:</span> <EM>[s_name] → [recipient_label]:</EM> <span class='message'>[msg]</span></b></font>"
-	var/msg_adm = "<font color='#9DCCFF'><b><span class='prefix'>[pfx]:</span> <EM>[s_name][admin_info] → [recipient_admin_label]:</EM> <span class='message'>[msg]</span></b></font>"
-	var/msg_rem = "<font color='#2F74A8'><b>(R) <span class='prefix'>[pfx]:</span> <EM>[s_name][admin_info] → [recipient_admin_label]:</EM> <span class='message'>[msg]</span></b></font>"
+	var/msg_reg = "<font color='#9DCCFF'><b>[prefix_text] <EM>[s_name] → [recipient_label]:</EM> <span class='message'>[msg]</span></b></font>"
+	var/msg_adm = "<font color='#9DCCFF'><b>[prefix_text] <EM>[s_name][admin_info] → [recipient_admin_label]:</EM> <span class='message'>[msg]</span></b></font>"
+	var/msg_rem = "<font color='#2F74A8'><b>(R) [prefix_text] <EM>[s_name][admin_info] → [recipient_admin_label]:</EM> <span class='message'>[msg]</span></b></font>"
 
 	var/list/seen = list()
 
@@ -128,10 +129,8 @@
 				continue
 
 			seen[C] = TRUE
-			if((C in GLOB.admins) && (C.prefs.admin_chat_toggles & CHAT_ADMINLOOC))
-				to_chat(C, msg_adm)
-			else
-				to_chat(C, msg_reg)
+			var/outgoing_msg = ((C in GLOB.admins) && (C.prefs.admin_chat_toggles & CHAT_ADMINLOOC)) ? msg_adm : msg_reg
+			to_chat(C, outgoing_msg)
 	else
 		var/mob/target = recipient_choice
 		if(get_dist(get_turf(target), get_turf(S)) > distance)
@@ -140,17 +139,13 @@
 		var/client/target_client = target?.client
 		if(target_client && (target_client.prefs.chat_toggles & CHAT_OOC))
 			seen[target_client] = TRUE
-			if((target_client in GLOB.admins) && (target_client.prefs.admin_chat_toggles & CHAT_ADMINLOOC))
-				to_chat(target_client, msg_adm)
-			else
-				to_chat(target_client, msg_reg)
+			var/target_msg = ((target_client in GLOB.admins) && (target_client.prefs.admin_chat_toggles & CHAT_ADMINLOOC)) ? msg_adm : msg_reg
+			to_chat(target_client, target_msg)
 
 		if((prefs.chat_toggles & CHAT_OOC) && !(src in seen))
 			seen[src] = TRUE
-			if((src in GLOB.admins) && (prefs.admin_chat_toggles & CHAT_ADMINLOOC))
-				to_chat(src, msg_adm)
-			else
-				to_chat(src, msg_reg)
+			var/self_msg = ((src in GLOB.admins) && (prefs.admin_chat_toggles & CHAT_ADMINLOOC)) ? msg_adm : msg_reg
+			to_chat(src, self_msg)
 
 	for(var/client/C in GLOB.admins)
 		if(seen[C] || !(C.prefs.admin_chat_toggles & CHAT_ADMINLOOC) || !(C.prefs.chat_toggles & CHAT_OOC))
@@ -214,8 +209,8 @@
 
 	mob.log_talk(msg, LOG_LOOC)
 
-	var/admin_info = " ([s_ckey]) [ADMIN_FLW(S)] <A href='?_src_=holder;[HrefToken()];mute=[s_ckey];mute_type=[MUTE_LOOC]'><font color='[(prefs.muted & MUTE_LOOC) ? "red" : "blue"]'>&#91;MUTE&#93;</font></a>"
-	
+	var/admin_info = " ([s_ckey]) [ADMIN_FLW(S)] <A href='?_src_=holder;[HrefToken()];mute=[s_ckey];mute_type=[MUTE_LOOC]'><font color='[(prefs.muted & MUTE_LOOC) ? "red" : "blue"]'>\[MUTE\]</font></a>"
+
 	var/msg_reg = "<font color='#6699CC'><b><span class='prefix'>[pfx]:</span> <EM>[s_name]:</EM> <span class='message'>[msg]</span></b></font>"
 	var/msg_adm = "<font color='#6699CC'><b><span class='prefix'>[pfx]:</span> <EM>[s_name][admin_info]:</EM> <span class='message'>[msg]</span></b></font>"
 	var/msg_rem = "<font color='#003458'><b>(R) <span class='prefix'>[pfx]:</span> <EM>[s_name][admin_info]:</EM> <span class='message'>[msg]</span></b></font>"
@@ -229,10 +224,8 @@
 			continue
 		
 		seen[C] = TRUE
-		if((C in GLOB.admins) && (C.prefs.admin_chat_toggles & CHAT_ADMINLOOC))
-			to_chat(C, msg_adm)
-		else
-			to_chat(C, msg_reg)
+		var/outgoing_msg = ((C in GLOB.admins) && (C.prefs.admin_chat_toggles & CHAT_ADMINLOOC)) ? msg_adm : msg_reg
+		to_chat(C, outgoing_msg)
 
 	for(var/client/C in GLOB.admins)
 		if(seen[C] || !(C.prefs.admin_chat_toggles & CHAT_ADMINLOOC) || !(C.prefs.chat_toggles & CHAT_OOC))
