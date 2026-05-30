@@ -108,7 +108,7 @@
 // DECREPIT/ANCIENT ALLOY
 
 /datum/anvil_recipe/armor/ancient/barbute
-	name = "Barbute, Decrepit (+1 Gilbranze)"
+	name = "Barbute, Ancient (+1 Gilbranze)"
 	additional_items = list(/obj/item/ingot/gilbranze)
 	created_item = /obj/item/clothing/head/roguetown/helmet/heavy/ancient
 
