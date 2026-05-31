@@ -48,6 +48,14 @@
 	nodamage = TRUE
 	knockdown = 3 SECONDS
 
+/obj/effect/proc_holder/spell/invoked/projectile/blood_net/cast(list/targets, mob/user = usr)
+	var/obj/item/I = user.get_active_held_item()
+	if(!istype(I, req_inhand))
+		to_chat(user, span_warning("I'm missing viscera in my hand to cast this."))
+		return FALSE
+	qdel(I)
+	return ..()
+
 /obj/projectile/magic/unholy_grasp/on_hit(atom/hit_atom, datum/thrownthing/throwingdatum)
 	. = ..()
 	if(. == BULLET_ACT_MISS || . == BULLET_ACT_BLOCK || !iscarbon(hit_atom))
@@ -57,7 +65,8 @@
 /obj/projectile/magic/unholy_grasp/proc/ensnare(mob/living/carbon/carbon)
 	if(carbon.legcuffed || carbon.get_num_legs(FALSE) < 2)
 		return
-	var/obj/item/net/net = new(carbon)
+	var/obj/item/net/unholy_grasp/net = new(carbon)
+	net.slipouttime = max(2 SECONDS, 10 SECONDS - max(0, carbon.STASTR - 10) * 0.5 SECONDS)
 	visible_message(span_danger("\The [src] ensnares [carbon] in vicera!"))
 	to_chat(carbon, span_danger("\The [src] ensnares you!"))
 	carbon.legcuffed = net
