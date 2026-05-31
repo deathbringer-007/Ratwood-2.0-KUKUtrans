@@ -26,7 +26,7 @@
 	var/hydration = 8
 	var/metabolized_acoffee = 0
 
- // you metabolize the coffee and it tracks it
+// you metabolize the coffee and it tracks it
 /datum/reagent/consumable/Acoffee/on_mob_add(mob/living/carbon/M)
 	metabolized_acoffee = 0
 
