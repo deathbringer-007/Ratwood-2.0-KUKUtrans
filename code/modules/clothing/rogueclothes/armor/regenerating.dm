@@ -57,6 +57,7 @@
 	if(obj_integrity >= max_integrity)
 		to_chat(loc, span_notice(repairmsg_end))
 		deltimer(reptimer)
+		reptimer = null
 		return
 
 	if(!skip_message)
