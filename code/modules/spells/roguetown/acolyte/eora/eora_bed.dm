@@ -12,16 +12,26 @@
 
 /obj/structure/bed/rogue/eora/Initialize(mapload)
 	. = ..()
-	RegisterSignal(src, COMSIG_SLEEPING_ON_BED, PROC_REF(on_sleeper))
 	var/random_rotation = pick(0, 180)
 	if(random_rotation != 0)
 		var/matrix/M = matrix()
 		M.Turn(random_rotation)
 		transform = M
 
-/obj/structure/bed/rogue/eora/proc/on_sleeper(datum/source, mob/living/L)
+/obj/structure/bed/rogue/eora/Crossed(atom/movable/AM, atom/oldloc)
+	. = ..()
+	if(isliving(AM))
+		RegisterSignal(AM, COMSIG_CARBON_HANDLE_SLEEP, PROC_REF(on_sleeper))
+
+/obj/structure/bed/rogue/eora/Uncrossed(atom/movable/AM)
+	. = ..()
+	if(isliving(AM))
+		UnregisterSignal(AM, COMSIG_CARBON_HANDLE_SLEEP)
+
+/obj/structure/bed/rogue/eora/proc/on_sleeper(datum/source)
 	SIGNAL_HANDLER
 
+	var/mob/living/L = source
 	if(!istype(L))
 		return
 
@@ -69,7 +79,8 @@
 
 /obj/structure/bed/rogue/eora/Destroy()
 	. = ..()
-	UnregisterSignal(src, COMSIG_SLEEPING_ON_BED)
+	for(var/mob/living/L in get_turf(src))
+		UnregisterSignal(L, COMSIG_CARBON_HANDLE_SLEEP)
 
 /datum/status_effect/buff/healing/bed_rest
 	id = "eora_bed"
