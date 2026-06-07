@@ -23,7 +23,7 @@
 	spell_tier = 2
 	invocations = list("Fulmen!")
 	invocation_type = "shout"
-	cost = 3
+	cost = 6
 	xp_gain = TRUE
 
 /obj/projectile/magic/lightning
