@@ -454,7 +454,7 @@
 	craftdiff = 4
 
 /datum/crafting_recipe/roguetown/survival/cheele
-	name = "cheele"
+	name = "奇勒"
 	result = list(
 		/obj/item/natural/worms/leech/cheele
 		)
@@ -533,7 +533,7 @@
 	craftdiff = 4
 
 /datum/crafting_recipe/roguetown/survival/kneaded_clay
-	name = "kneaded clay"
+	name = "揉制黏土"
 	result = /obj/item/natural/clay/kneaded
 	reqs = list(
 		/obj/item/natural/clay = 2,
@@ -545,7 +545,7 @@
 
 ///Repair Kits///
 /datum/crafting_recipe/roguetown/survival/repairkitclothbad
-	name = "fabric patch" //9 fiber
+	name = "织物补片(修理包)" //9 fiber
 	display_category = ITEM_CAT_TOOLS_WORKSHOP
 	result = /obj/item/repair_kit/bad
 	reqs = list(
@@ -556,7 +556,7 @@
 	craftdiff = 1
 
 /datum/crafting_recipe/roguetown/survival/repairkitmetalingot
-	name = "empty metal repair kit (iron bar)"
+	name = "空金属套件(铁锭)"
 	display_category = ITEM_CAT_TOOLS_WORKSHOP
 	result = /obj/item/armorkit_empty
 	reqs = list(
@@ -565,7 +565,7 @@
 	craftdiff = 2
 
 /datum/crafting_recipe/roguetown/survival/repairkitmetalscrap
-	name = "empty metal repair kit (iron scrap)"
+	name = "空金属套件(修理包)(铁废料)"
 	display_category = ITEM_CAT_TOOLS_WORKSHOP
 	result = /obj/item/armorkit_empty
 	reqs = list(
@@ -574,7 +574,7 @@
 	craftdiff = 1
 
 /datum/crafting_recipe/roguetown/survival/repairkitcloth
-	name = "sewing kit"
+	name = "缝纫套件(修理包)"
 	display_category = ITEM_CAT_TOOLS_WORKSHOP
 	result = /obj/item/repair_kit
 	reqs = list(
