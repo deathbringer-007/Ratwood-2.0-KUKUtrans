@@ -92,14 +92,14 @@
 	craftdiff = 1
 
 /datum/crafting_recipe/roguetown/leather/bikini
-	name = "皮胸甲"
+	name = "皮比基尼甲"
 	result = /obj/item/clothing/suit/roguetown/armor/leather/bikini
 	reqs = list(/obj/item/natural/hide/cured = 2)
 	sellprice = 26
 	craftdiff = 2
 
 /datum/crafting_recipe/roguetown/leather/hidebikini
-	name = "兽皮胸甲"
+	name = "兽皮比基尼甲"
 	result = /obj/item/clothing/suit/roguetown/armor/leather/hide/bikini
 	reqs = list(/obj/item/natural/hide/cured = 2,
 				/obj/item/natural/fur = 1)
