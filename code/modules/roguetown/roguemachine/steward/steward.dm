@@ -25,7 +25,7 @@
 	var/total_deposit = 0
 	var/list/excluded_jobs = list("Wretch","Vagabond","Adventurer")
 	var/current_category = "Raw Materials"
-	var/list/categories = list("Raw Materials", "Foodstuffs", "Fruits", "Seafood")
+	var/list/categories = list("原材料", "食材", "水果", "海产")
 	var/list/daily_payments = list() // Associative list: job name -> payment amount
 
 /obj/structure/roguemachine/steward/Initialize(mapload)
